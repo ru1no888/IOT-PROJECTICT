@@ -236,6 +236,29 @@
             border-bottom: none;
         }
 
+        .manual-lock-note {
+            margin-top: 0.85rem;
+            border-radius: 0.75rem;
+            padding: 0.55rem 0.7rem;
+            font-size: 0.78rem;
+            font-weight: 500;
+            line-height: 1.35;
+            border: 1px solid transparent;
+            transition: all 0.25s ease;
+        }
+
+        .manual-lock-on {
+            background: #fff7ed;
+            color: #9a3412;
+            border-color: #fed7aa;
+        }
+
+        .manual-lock-off {
+            background: #ecfdf5;
+            color: #065f46;
+            border-color: #a7f3d0;
+        }
+
         .log-list {
             display: flex;
             flex-direction: column;
@@ -420,7 +443,7 @@
                 </h2>
 
                 <div class="space-y-4">
-                    <div class="bg-white/70 rounded-xl p-4 border border-white/90 flex items-center justify-between">
+                    <div id="relay1-wrapper" class="bg-white/70 rounded-xl p-4 border border-white/90 flex items-center justify-between">
                         <div class="flex items-center gap-3">
                             <i class="fa-regular fa-lightbulb text-amber-500 text-xl"></i>
                             <div>
@@ -463,9 +486,14 @@
                     </div>
                 </div>
 
+                <p id="manual-lock-note" class="manual-lock-note manual-lock-off">
+                    <i class="fa-solid fa-unlock mr-1"></i>
+                    Manual พร้อมใช้งาน: ตอนนี้ควบคุม Relay 1/2 ได้ตามปกติ
+                </p>
+
                 <div class="mt-5 bg-slate-900 text-white rounded-xl p-4">
                     <p class="text-sm font-medium mb-1"><i class="fa-solid fa-note-sticky text-amber-300 mr-2"></i>Sticker Notes</p>
-                    <p class="text-xs text-slate-300">เมื่อเปิด Auto ระบบจะล็อกการสั่งพัดลมด้วยมือเพื่อป้องกันคำสั่งชนกัน</p>
+                    <p class="text-xs text-slate-300">เมื่อเปิด Auto ระบบจะล็อกการสั่งงานแบบแมนนวลทั้ง Relay 1 และ Relay 2</p>
                 </div>
             </aside>
         </section>
@@ -547,8 +575,10 @@
         const toggleRelay1 = document.getElementById('toggle-relay1');
         const toggleRelay2 = document.getElementById('toggle-relay2');
         const toggleAuto = document.getElementById('toggle-auto');
+        const relay1Wrapper = document.getElementById('relay1-wrapper');
         const relay2Wrapper = document.getElementById('relay2-wrapper');
         const statusEl = document.getElementById('connection-status');
+        const manualLockNoteEl = document.getElementById('manual-lock-note');
         const toastWrapEl = document.getElementById('toast-wrap');
         const logListEl = document.getElementById('log-list');
         const clearLogsBtn = document.getElementById('clear-logs-btn');
@@ -563,6 +593,7 @@
             light: null,
             connection: 'warn'
         };
+        let isManualLockedByAuto = null;
 
         function toNumberOrNull(value) {
             if (value === undefined || value === null || value === '') return null;
@@ -796,6 +827,38 @@
             }
         }
 
+        function setManualLockState(autoMode) {
+            toggleRelay1.disabled = autoMode;
+            toggleRelay2.disabled = autoMode;
+
+            if (autoMode) {
+                relay1Wrapper.classList.add('opacity-70');
+                relay2Wrapper.classList.add('opacity-70');
+            } else {
+                relay1Wrapper.classList.remove('opacity-70');
+                relay2Wrapper.classList.remove('opacity-70');
+            }
+
+            if (isManualLockedByAuto !== autoMode) {
+                if (autoMode) {
+                    addLog('เปิด Auto แล้ว: ล็อกระบบแมนนวลทั้ง Relay 1 และ Relay 2', 'warn');
+                    showToast('Auto ทำงาน: ล็อกระบบแมนนวลแล้ว', 'warn');
+                } else {
+                    addLog('ปิด Auto แล้ว: ปลดล็อกระบบแมนนวล', 'good');
+                    showToast('ปลดล็อกระบบแมนนวลแล้ว', 'good');
+                }
+                isManualLockedByAuto = autoMode;
+            }
+
+            if (autoMode) {
+                manualLockNoteEl.className = 'manual-lock-note manual-lock-on';
+                manualLockNoteEl.innerHTML = '<i class="fa-solid fa-lock mr-1"></i>Manual ถูกล็อกโดย Auto แบบ real-time';
+            } else {
+                manualLockNoteEl.className = 'manual-lock-note manual-lock-off';
+                manualLockNoteEl.innerHTML = '<i class="fa-solid fa-unlock mr-1"></i>Manual พร้อมใช้งาน: ตอนนี้ควบคุม Relay 1/2 ได้ตามปกติ';
+            }
+        }
+
         // ดึงข้อมูล Realtime จาก Firebase (/iot_data)
         const dbRef = ref(db, 'iot_data');
         onValue(dbRef, (snapshot) => {
@@ -834,13 +897,8 @@
                 if (document.activeElement !== toggleRelay2) toggleRelay2.checked = relay2;
                 if (document.activeElement !== toggleAuto) toggleAuto.checked = autoMode;
 
-                // ล็อกปุ่มพัดลม ถ้าโหมดออโต้ทำงาน
-                toggleRelay2.disabled = autoMode;
-                if (autoMode) {
-                    relay2Wrapper.classList.add('opacity-70');
-                } else {
-                    relay2Wrapper.classList.remove('opacity-70');
-                }
+                // ล็อกการควบคุมแบบแมนนวลทั้งหมด เมื่อโหมด Auto ทำงาน
+                setManualLockState(autoMode);
 
                 const timeLabel = getTimeString();
                 pushChartPoint(lightChart, [light], timeLabel);
@@ -856,6 +914,12 @@
 
         // การส่งคำสั่งไปที่ Firebase เมื่อกดสวิตช์
         toggleRelay1.addEventListener('change', (e) => {
+            if (toggleAuto.checked) {
+                e.target.checked = !e.target.checked;
+                showToast('ไม่สามารถสั่งแมนนวลได้ขณะเปิด Auto', 'warn');
+                addLog('บล็อกคำสั่ง Relay 1 เพราะเปิด Auto อยู่', 'warn');
+                return;
+            }
             set(ref(db, 'iot_data/relay1'), e.target.checked);
             const text = e.target.checked ? 'เปิดหลอดไฟ (Relay 1)' : 'ปิดหลอดไฟ (Relay 1)';
             addLog(text, 'info');
@@ -863,6 +927,12 @@
         });
 
         toggleRelay2.addEventListener('change', (e) => {
+            if (toggleAuto.checked) {
+                e.target.checked = !e.target.checked;
+                showToast('ไม่สามารถสั่งแมนนวลได้ขณะเปิด Auto', 'warn');
+                addLog('บล็อกคำสั่ง Relay 2 เพราะเปิด Auto อยู่', 'warn');
+                return;
+            }
             set(ref(db, 'iot_data/relay2'), e.target.checked);
             const text = e.target.checked ? 'เปิดพัดลม (Relay 2)' : 'ปิดพัดลม (Relay 2)';
             addLog(text, 'info');
