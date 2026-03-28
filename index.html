@@ -12,16 +12,63 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap');
         :root {
-            --bg-1: #e9f6ff;
-            --bg-2: #fff6e6;
-            --bg-3: #eef9f1;
-            --card: rgba(255, 255, 255, 0.74);
-            --line: rgba(255, 255, 255, 0.95);
-            --text: #153047;
-            --muted: #4b6478;
-            --accent: #ff8a00;
-            --accent-2: #00a9b7;
-            --light-glow: 0.4;
+            --bg-1: #040507;
+            --bg-2: #090c12;
+            --bg-3: #101621;
+            --card: rgba(11, 16, 24, 0.82);
+            --line: rgba(148, 163, 184, 0.16);
+            --text: #e6edf7;
+            --muted: #94a3b8;
+            --accent: #f59e0b;
+            --accent-2: #22d3ee;
+            --light-glow: 0.28;
+        }
+
+        body.theme-obsidian {
+            --bg-1: #040507;
+            --bg-2: #090c12;
+            --bg-3: #101621;
+            --card: rgba(11, 16, 24, 0.82);
+            --line: rgba(148, 163, 184, 0.16);
+            --text: #e6edf7;
+            --muted: #94a3b8;
+            --accent: #f59e0b;
+            --accent-2: #22d3ee;
+        }
+
+        body.theme-carbon {
+            --bg-1: #050505;
+            --bg-2: #111111;
+            --bg-3: #1a1a1d;
+            --card: rgba(20, 20, 22, 0.84);
+            --line: rgba(156, 163, 175, 0.2);
+            --text: #f3f4f6;
+            --muted: #9ca3af;
+            --accent: #fb7185;
+            --accent-2: #60a5fa;
+        }
+
+        body.theme-neon {
+            --bg-1: #02030b;
+            --bg-2: #071226;
+            --bg-3: #111135;
+            --card: rgba(5, 10, 27, 0.86);
+            --line: rgba(56, 189, 248, 0.26);
+            --text: #ecfeff;
+            --muted: #a5f3fc;
+            --accent: #22d3ee;
+            --accent-2: #a78bfa;
+        }
+
+        body.mode-light {
+            --bg-1: #f3f8ff;
+            --bg-2: #f7fbff;
+            --bg-3: #e9f4ff;
+            --card: rgba(255, 255, 255, 0.86);
+            --line: rgba(15, 23, 42, 0.12);
+            --text: #0f172a;
+            --muted: #475569;
+            --light-glow: 0.35;
         }
 
         * { box-sizing: border-box; }
@@ -30,11 +77,25 @@
             font-family: 'Kanit', sans-serif;
             color: var(--text);
             background:
-                radial-gradient(circle at 8% 12%, rgba(255, 156, 43, 0.35), transparent 22%),
-                radial-gradient(circle at 92% 80%, rgba(0, 170, 181, 0.25), transparent 24%),
+                radial-gradient(circle at 8% 10%, rgba(245, 158, 11, 0.2), transparent 28%),
+                radial-gradient(circle at 90% 12%, rgba(34, 211, 238, 0.12), transparent 26%),
+                radial-gradient(circle at 70% 80%, rgba(168, 85, 247, 0.12), transparent 24%),
                 linear-gradient(140deg, var(--bg-1), var(--bg-2) 54%, var(--bg-3));
             min-height: 100vh;
             overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+            background-size: 42px 42px;
+            mask-image: radial-gradient(circle at 50% 40%, #000 45%, transparent 95%);
+            pointer-events: none;
+            z-index: -1;
         }
 
         .sticker-cloud {
@@ -54,14 +115,14 @@
         }
 
         .sticker-1 { top: 12%; left: 2%; background: linear-gradient(135deg, #ffd54f, #ffb300); }
-        .sticker-2 { top: 16%; right: 3%; background: linear-gradient(135deg, #7de2fc, #00a7c5); animation-delay: 1.2s; }
-        .sticker-3 { bottom: 10%; right: 6%; background: linear-gradient(135deg, #b9f6ca, #66bb6a); animation-delay: 2.1s; }
+        .sticker-2 { top: 16%; right: 3%; background: linear-gradient(135deg, #67e8f9, #0891b2); animation-delay: 1.2s; }
+        .sticker-3 { bottom: 10%; right: 6%; background: linear-gradient(135deg, #a78bfa, #7c3aed); animation-delay: 2.1s; }
 
         .glass-card {
             background: var(--card);
             border: 1px solid var(--line);
             border-radius: 1.25rem;
-            box-shadow: 0 14px 35px rgba(17, 40, 63, 0.11);
+            box-shadow: 0 18px 38px rgba(0, 0, 0, 0.36);
             backdrop-filter: blur(12px);
             position: relative;
             overflow: hidden;
@@ -71,8 +132,20 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(120deg, rgba(255, 255, 255, 0.16), transparent 40%, rgba(255, 255, 255, 0.2));
+            background: linear-gradient(120deg, rgba(255, 255, 255, 0.07), transparent 45%, rgba(56, 189, 248, 0.06));
             pointer-events: none;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(56, 189, 248, 0.25);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+        }
+
+        .neon-frame {
+            box-shadow:
+                inset 0 0 0 1px rgba(56, 189, 248, 0.12),
+                0 0 0 1px rgba(34, 211, 238, 0.06),
+                0 20px 40px rgba(0, 0, 0, 0.45);
         }
 
         .hero-title {
@@ -86,6 +159,8 @@
             padding: 0.55rem 1rem;
             font-weight: 500;
             font-size: 0.9rem;
+            border: 1px solid rgba(148, 163, 184, 0.26);
+            background: rgba(15, 23, 42, 0.7);
         }
 
         .metric-card {
@@ -99,8 +174,9 @@
 
         .sticker-pill {
             border-radius: 999px;
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            background: rgba(255, 255, 255, 0.75);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            background: rgba(15, 23, 42, 0.76);
+            color: #dbeafe;
             font-size: 0.8rem;
             padding: 0.35rem 0.65rem;
             display: inline-flex;
@@ -110,13 +186,119 @@
             margin-top: 0.35rem;
         }
 
+        .theme-switcher {
+            margin-top: 0.8rem;
+            display: inline-flex;
+            padding: 0.28rem;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            gap: 0.3rem;
+            flex-wrap: wrap;
+        }
+
+        .theme-btn {
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.65);
+            color: #dbeafe;
+            padding: 0.26rem 0.65rem;
+            font-size: 0.74rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .theme-btn:hover {
+            border-color: rgba(34, 211, 238, 0.6);
+            transform: translateY(-1px);
+        }
+
+        .theme-btn.active {
+            border-color: rgba(34, 211, 238, 0.8);
+            background: linear-gradient(120deg, rgba(34, 211, 238, 0.2), rgba(167, 139, 250, 0.2));
+            color: #ffffff;
+            box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.35);
+        }
+
+        .mode-switcher {
+            margin-top: 0.55rem;
+            display: inline-flex;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.32);
+            background: rgba(15, 23, 42, 0.65);
+            padding: 0.25rem;
+            gap: 0.28rem;
+        }
+
+        .mode-btn {
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.66);
+            color: #dbeafe;
+            padding: 0.24rem 0.62rem;
+            font-size: 0.72rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .mode-btn.active {
+            border-color: rgba(56, 189, 248, 0.82);
+            background: linear-gradient(120deg, rgba(56, 189, 248, 0.25), rgba(45, 212, 191, 0.22));
+            color: #ffffff;
+            box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.36);
+        }
+
+        .perf-grid {
+            margin-top: 0.9rem;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.55rem;
+        }
+
+        .perf-chip {
+            border: 1px solid rgba(148, 163, 184, 0.24);
+            background: rgba(2, 6, 23, 0.72);
+            border-radius: 0.75rem;
+            padding: 0.45rem 0.6rem;
+            font-size: 0.74rem;
+            color: #c7d2e5;
+        }
+
+        .perf-value {
+            display: block;
+            margin-top: 0.12rem;
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .tx-live {
+            color: #22d3ee;
+            text-shadow: 0 0 14px rgba(34, 211, 238, 0.38);
+        }
+
+        .tx-pending {
+            color: #fbbf24;
+            text-shadow: 0 0 14px rgba(251, 191, 36, 0.38);
+        }
+
+        .tx-ok {
+            color: #4ade80;
+            text-shadow: 0 0 14px rgba(74, 222, 128, 0.38);
+        }
+
+        .tx-fail {
+            color: #f87171;
+            text-shadow: 0 0 14px rgba(248, 113, 113, 0.38);
+        }
+
         .light-aura {
             position: absolute;
             inset: auto -25% -35% auto;
             width: 250px;
             height: 250px;
             border-radius: 999px;
-            background: radial-gradient(circle, rgba(255, 193, 7, calc(var(--light-glow))) 0%, rgba(255, 193, 7, 0) 70%);
+            background: radial-gradient(circle, rgba(245, 158, 11, calc(var(--light-glow))) 0%, rgba(245, 158, 11, 0) 70%);
             pointer-events: none;
             transition: opacity 0.35s ease;
         }
@@ -138,7 +320,7 @@
             position: absolute;
             inset: 0;
             cursor: pointer;
-            background: #cbd5e1;
+            background: #334155;
             border-radius: 999px;
             transition: 0.25s;
         }
@@ -157,7 +339,7 @@
         }
 
         .switch input:checked + .slider {
-            background: linear-gradient(90deg, #0ea5e9, #22c55e);
+            background: linear-gradient(90deg, #06b6d4, #22c55e);
         }
 
         .switch input:checked + .slider:before {
@@ -218,6 +400,45 @@
             border-color: #93c5fd;
         }
 
+        .chip-temp-warn {
+            background: rgba(251, 146, 60, 0.2);
+            color: #fdba74;
+            border-color: rgba(251, 146, 60, 0.45);
+        }
+
+        .chip-temp-danger {
+            background: rgba(239, 68, 68, 0.24);
+            color: #fca5a5;
+            border-color: rgba(248, 113, 113, 0.6);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.26);
+        }
+
+        .chip-hum-warn {
+            background: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+            border-color: rgba(96, 165, 250, 0.45);
+        }
+
+        .chip-hum-danger {
+            background: rgba(6, 182, 212, 0.24);
+            color: #67e8f9;
+            border-color: rgba(34, 211, 238, 0.62);
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.26);
+        }
+
+        .chip-light-warn {
+            background: rgba(250, 204, 21, 0.18);
+            color: #fde047;
+            border-color: rgba(250, 204, 21, 0.44);
+        }
+
+        .chip-light-danger {
+            background: rgba(244, 63, 94, 0.22);
+            color: #fda4af;
+            border-color: rgba(251, 113, 133, 0.58);
+            box-shadow: 0 0 20px rgba(244, 63, 94, 0.22);
+        }
+
         .dot-good { background: #22c55e; }
         .dot-warn { background: #f59e0b; }
         .dot-danger { background: #ef4444; }
@@ -247,16 +468,20 @@
             transition: all 0.25s ease;
         }
 
+        .manual-lock-note i {
+            animation: lockPulse 1.5s ease-in-out infinite;
+        }
+
         .manual-lock-on {
-            background: #fff7ed;
-            color: #9a3412;
-            border-color: #fed7aa;
+            background: rgba(251, 191, 36, 0.12);
+            color: #fbbf24;
+            border-color: rgba(251, 191, 36, 0.28);
         }
 
         .manual-lock-off {
-            background: #ecfdf5;
-            color: #065f46;
-            border-color: #a7f3d0;
+            background: rgba(34, 197, 94, 0.12);
+            color: #86efac;
+            border-color: rgba(74, 222, 128, 0.3);
         }
 
         .log-list {
@@ -271,17 +496,17 @@
         .log-item {
             border-radius: 0.7rem;
             border-left: 4px solid #cbd5e1;
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(15, 23, 42, 0.78);
             padding: 0.6rem 0.7rem;
             font-size: 0.82rem;
-            color: #2c4a5b;
+            color: #d2deef;
             line-height: 1.3;
             animation: fadeInUp 0.32s ease;
         }
 
         .log-time {
             font-size: 0.72rem;
-            color: #5f7a8a;
+            color: #8ea1b8;
             display: block;
             margin-top: 0.15rem;
         }
@@ -315,6 +540,137 @@
         .toast-warn { background: linear-gradient(135deg, #d97706, #f59e0b); }
         .toast-danger { background: linear-gradient(135deg, #dc2626, #ef4444); }
         .toast-info { background: linear-gradient(135deg, #2563eb, #3b82f6); }
+        .toast-temp-warn { background: linear-gradient(135deg, #ea580c, #f97316); }
+        .toast-temp-danger { background: linear-gradient(135deg, #b91c1c, #ef4444); }
+        .toast-hum-warn { background: linear-gradient(135deg, #2563eb, #06b6d4); }
+        .toast-hum-danger { background: linear-gradient(135deg, #0e7490, #06b6d4); }
+        .toast-light-warn { background: linear-gradient(135deg, #ca8a04, #eab308); }
+        .toast-light-danger { background: linear-gradient(135deg, #be123c, #f43f5e); }
+
+        .magic-actions {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.55rem;
+            margin-top: 0.85rem;
+        }
+
+        .threshold-panel {
+            margin-top: 0.95rem;
+            border-radius: 0.9rem;
+            border: 1px solid rgba(148, 163, 184, 0.26);
+            background: rgba(2, 6, 23, 0.58);
+            padding: 0.7rem;
+        }
+
+        .threshold-panel h4 {
+            font-size: 0.86rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #e2e8f0;
+        }
+
+        .threshold-panel select,
+        .threshold-panel input {
+            width: 100%;
+            border-radius: 0.55rem;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            background: rgba(15, 23, 42, 0.76);
+            color: #e2e8f0;
+            padding: 0.34rem 0.46rem;
+            font-size: 0.75rem;
+            outline: none;
+        }
+
+        .threshold-grid {
+            margin-top: 0.55rem;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.45rem;
+        }
+
+        .threshold-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.22rem;
+        }
+
+        .threshold-field label {
+            font-size: 0.68rem;
+            color: #9fb1c7;
+        }
+
+        .threshold-actions {
+            margin-top: 0.55rem;
+            display: flex;
+            gap: 0.42rem;
+        }
+
+        .threshold-btn {
+            flex: 1;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 0.62rem;
+            background: rgba(15, 23, 42, 0.8);
+            color: #e2e8f0;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 0.34rem 0.44rem;
+            transition: all 0.2s ease;
+        }
+
+        .threshold-btn:hover {
+            border-color: rgba(34, 211, 238, 0.65);
+        }
+
+        .mini-summary {
+            margin-top: 0.7rem;
+            border-radius: 0.8rem;
+            border: 1px solid rgba(148, 163, 184, 0.24);
+            background: rgba(2, 6, 23, 0.48);
+            padding: 0.6rem;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.45rem;
+        }
+
+        .mini-item {
+            border-radius: 0.65rem;
+            padding: 0.45rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            background: rgba(15, 23, 42, 0.58);
+        }
+
+        .mini-title {
+            font-size: 0.68rem;
+            color: #9fb1c7;
+        }
+
+        .mini-value {
+            display: block;
+            margin-top: 0.14rem;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .mini-warn .mini-value { color: #facc15; }
+        .mini-danger .mini-value { color: #fb7185; }
+
+        .magic-btn {
+            border: 1px solid rgba(148, 163, 184, 0.28);
+            border-radius: 0.72rem;
+            background: rgba(15, 23, 42, 0.72);
+            color: #d7e3f5;
+            font-size: 0.78rem;
+            font-weight: 500;
+            padding: 0.45rem 0.6rem;
+            transition: all 0.22s ease;
+        }
+
+        .magic-btn:hover {
+            transform: translateY(-2px);
+            border-color: rgba(34, 211, 238, 0.46);
+            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.22);
+        }
 
         @keyframes toastIn {
             from { opacity: 0; transform: translateX(16px); }
@@ -336,8 +692,140 @@
             50% { transform: translateY(-10px) rotate(-4deg); }
         }
 
+        @keyframes lockPulse {
+            0%, 100% { opacity: 0.65; }
+            50% { opacity: 1; }
+        }
+
         @media (max-width: 768px) {
             .sticker-cloud { display: none; }
+            .perf-grid { grid-template-columns: 1fr; }
+            .magic-actions { grid-template-columns: 1fr; }
+            .threshold-grid { grid-template-columns: 1fr; }
+            .mini-summary { grid-template-columns: 1fr; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+
+        .text-slate-800,
+        .text-slate-700,
+        .text-slate-600,
+        .text-slate-500 {
+            color: #c6d2e3 !important;
+        }
+
+        .text-slate-300 {
+            color: #9fb1c7 !important;
+        }
+
+        .bg-white\/70,
+        .bg-emerald-50,
+        .bg-slate-900,
+        .bg-amber-100,
+        .bg-red-100,
+        .bg-sky-100,
+        .bg-white\/90 {
+            background-color: rgba(15, 23, 42, 0.75) !important;
+            border-color: rgba(148, 163, 184, 0.22) !important;
+        }
+
+        .text-amber-700,
+        .text-amber-500,
+        .text-red-500,
+        .text-sky-500,
+        .text-cyan-600,
+        .text-emerald-600,
+        .text-emerald-800,
+        .text-emerald-700 {
+            color: #f8fafc !important;
+        }
+
+        #connection-status.bg-amber-100,
+        #connection-status.bg-emerald-100,
+        #connection-status.bg-rose-100 {
+            background: rgba(15, 23, 42, 0.78) !important;
+            color: #e2e8f0 !important;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+        }
+
+        #relay1-wrapper,
+        #relay2-wrapper {
+            background: rgba(15, 23, 42, 0.76) !important;
+            border-color: rgba(148, 163, 184, 0.22) !important;
+        }
+
+        #clear-logs-btn {
+            background: rgba(30, 41, 59, 0.85) !important;
+            color: #dbeafe !important;
+            border: 1px solid rgba(148, 163, 184, 0.25);
+        }
+
+        #clear-logs-btn:hover {
+            background: rgba(51, 65, 85, 0.9) !important;
+        }
+
+        .log-list::-webkit-scrollbar {
+            width: 7px;
+        }
+
+        .log-list::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.32);
+            border-radius: 999px;
+        }
+
+        body.mode-light .text-slate-800,
+        body.mode-light .text-slate-700,
+        body.mode-light .text-slate-600,
+        body.mode-light .text-slate-500,
+        body.mode-light .text-slate-300 {
+            color: #1e293b !important;
+        }
+
+        body.mode-light .sticker-pill,
+        body.mode-light .theme-switcher,
+        body.mode-light .theme-btn,
+        body.mode-light .mode-switcher,
+        body.mode-light .mode-btn,
+        body.mode-light .perf-chip,
+        body.mode-light .magic-btn,
+        body.mode-light .threshold-panel,
+        body.mode-light .threshold-panel select,
+        body.mode-light .threshold-panel input,
+        body.mode-light .threshold-btn,
+        body.mode-light .mini-item,
+        body.mode-light .log-item {
+            background: rgba(255, 255, 255, 0.88) !important;
+            color: #0f172a !important;
+            border-color: rgba(15, 23, 42, 0.16) !important;
+        }
+
+        body.mode-light .mini-title,
+        body.mode-light .threshold-field label,
+        body.mode-light .log-time {
+            color: #475569 !important;
+        }
+
+        body.mode-light #connection-status.bg-amber-100,
+        body.mode-light #connection-status.bg-emerald-100,
+        body.mode-light #connection-status.bg-rose-100,
+        body.mode-light #relay1-wrapper,
+        body.mode-light #relay2-wrapper,
+        body.mode-light .bg-emerald-50,
+        body.mode-light .bg-slate-900,
+        body.mode-light #clear-logs-btn {
+            background: rgba(255, 255, 255, 0.9) !important;
+            color: #0f172a !important;
+            border-color: rgba(15, 23, 42, 0.16) !important;
+        }
+
+        body.mode-light .status-badge {
+            color: #0f172a;
+            background: rgba(255, 255, 255, 0.9);
         }
     </style>
 </head>
@@ -362,6 +850,29 @@
                         <span class="sticker-pill"><i class="fa-solid fa-signal"></i>LIVE</span>
                         <span class="sticker-pill"><i class="fa-solid fa-wand-magic-sparkles"></i>MODERN</span>
                         <span class="sticker-pill"><i class="fa-solid fa-shield-heart"></i>STABLE</span>
+                    </div>
+                    <div class="theme-switcher" role="group" aria-label="Theme Switcher">
+                        <button id="theme-obsidian" class="theme-btn" type="button">Obsidian</button>
+                        <button id="theme-carbon" class="theme-btn" type="button">Carbon</button>
+                        <button id="theme-neon" class="theme-btn" type="button">Neon</button>
+                    </div>
+                    <div class="mode-switcher" role="group" aria-label="Mode Switcher">
+                        <button id="mode-dark" class="mode-btn" type="button">Dark</button>
+                        <button id="mode-light" class="mode-btn" type="button">Light</button>
+                    </div>
+                    <div class="perf-grid">
+                        <div class="perf-chip">
+                            RX Rate
+                            <span id="rx-rate" class="perf-value tx-live">-- /s</span>
+                        </div>
+                        <div class="perf-chip">
+                            TX Latency
+                            <span id="tx-latency" class="perf-value">-- ms</span>
+                        </div>
+                        <div class="perf-chip">
+                            Command
+                            <span id="tx-state" class="perf-value tx-live">READY</span>
+                        </div>
                     </div>
                 </div>
                 <div id="connection-status" class="status-badge bg-amber-100 text-amber-700 w-fit">
@@ -491,6 +1002,58 @@
                     Manual พร้อมใช้งาน: ตอนนี้ควบคุม Relay 1/2 ได้ตามปกติ
                 </p>
 
+                <div class="magic-actions">
+                    <button id="all-off-btn" class="magic-btn" type="button"><i class="fa-solid fa-power-off mr-1"></i>ปิดอุปกรณ์ทั้งหมด</button>
+                    <button id="sync-now-btn" class="magic-btn" type="button"><i class="fa-solid fa-bolt mr-1"></i>Sync ทันที</button>
+                </div>
+
+                <div class="threshold-panel">
+                    <h4><i class="fa-solid fa-sliders mr-1"></i>Threshold Preset (ปรับจาก UI)</h4>
+                    <select id="threshold-preset">
+                        <option value="balanced">Balanced</option>
+                        <option value="strict">Strict</option>
+                        <option value="relaxed">Relaxed</option>
+                    </select>
+                    <div class="threshold-grid">
+                        <div class="threshold-field">
+                            <label>Temp Warn >=</label>
+                            <input id="th-temp-warn" type="number" step="0.1">
+                        </div>
+                        <div class="threshold-field">
+                            <label>Temp Danger >=</label>
+                            <input id="th-temp-danger" type="number" step="0.1">
+                        </div>
+                        <div class="threshold-field">
+                            <label>Humidity Warn ต่ำกว่า</label>
+                            <input id="th-hum-warn-low" type="number" step="0.1">
+                        </div>
+                        <div class="threshold-field">
+                            <label>Humidity Warn สูงกว่า</label>
+                            <input id="th-hum-warn-high" type="number" step="0.1">
+                        </div>
+                        <div class="threshold-field">
+                            <label>Humidity Danger >=</label>
+                            <input id="th-hum-danger" type="number" step="0.1">
+                        </div>
+                        <div class="threshold-field">
+                            <label>Light Danger &lt;</label>
+                            <input id="th-light-danger" type="number" step="1">
+                        </div>
+                        <div class="threshold-field">
+                            <label>Light Warn ต่ำกว่า</label>
+                            <input id="th-light-warn-low" type="number" step="1">
+                        </div>
+                        <div class="threshold-field">
+                            <label>Light Warn สูงกว่า</label>
+                            <input id="th-light-warn-high" type="number" step="1">
+                        </div>
+                    </div>
+                    <div class="threshold-actions">
+                        <button id="apply-threshold-btn" class="threshold-btn" type="button">Apply Threshold</button>
+                        <button id="reset-threshold-btn" class="threshold-btn" type="button">Reset</button>
+                    </div>
+                </div>
+
                 <div class="mt-5 bg-slate-900 text-white rounded-xl p-4">
                     <p class="text-sm font-medium mb-1"><i class="fa-solid fa-note-sticky text-amber-300 mr-2"></i>Sticker Notes</p>
                     <p class="text-xs text-slate-300">เมื่อเปิด Auto ระบบจะล็อกการสั่งงานแบบแมนนวลทั้ง Relay 1 และ Relay 2</p>
@@ -532,9 +1095,24 @@
                         <i class="fa-solid fa-clock-rotate-left text-amber-500 mr-2"></i>
                         Log ย้อนหลัง
                     </h3>
-                    <button id="clear-logs-btn" class="text-xs px-3 py-1 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">
-                        ล้าง Log
-                    </button>
+                    <div class="flex gap-2">
+                        <button id="export-logs-btn" class="text-xs px-3 py-1 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">
+                            Export CSV
+                        </button>
+                        <button id="clear-logs-btn" class="text-xs px-3 py-1 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">
+                            ล้าง Log
+                        </button>
+                    </div>
+                </div>
+                <div class="mini-summary">
+                    <div class="mini-item mini-warn">
+                        <span class="mini-title">Warn วันนี้</span>
+                        <span id="warn-daily-count" class="mini-value">0</span>
+                    </div>
+                    <div class="mini-item mini-danger">
+                        <span class="mini-title">Danger วันนี้</span>
+                        <span id="danger-daily-count" class="mini-value">0</span>
+                    </div>
                 </div>
                 <div id="log-list" class="log-list" aria-live="polite"></div>
             </article>
@@ -544,7 +1122,7 @@
     <script type="module">
         // Import Firebase จาก CDN
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
         // ตั้งค่า Firebase (จากที่คุณส่งมาให้)
         const firebaseConfig = {
@@ -579,9 +1157,33 @@
         const relay2Wrapper = document.getElementById('relay2-wrapper');
         const statusEl = document.getElementById('connection-status');
         const manualLockNoteEl = document.getElementById('manual-lock-note');
+        const themeObsidianBtn = document.getElementById('theme-obsidian');
+        const themeCarbonBtn = document.getElementById('theme-carbon');
+        const themeNeonBtn = document.getElementById('theme-neon');
+        const modeDarkBtn = document.getElementById('mode-dark');
+        const modeLightBtn = document.getElementById('mode-light');
+        const thresholdPresetEl = document.getElementById('threshold-preset');
+        const thTempWarnEl = document.getElementById('th-temp-warn');
+        const thTempDangerEl = document.getElementById('th-temp-danger');
+        const thHumWarnLowEl = document.getElementById('th-hum-warn-low');
+        const thHumWarnHighEl = document.getElementById('th-hum-warn-high');
+        const thHumDangerEl = document.getElementById('th-hum-danger');
+        const thLightDangerEl = document.getElementById('th-light-danger');
+        const thLightWarnLowEl = document.getElementById('th-light-warn-low');
+        const thLightWarnHighEl = document.getElementById('th-light-warn-high');
+        const applyThresholdBtn = document.getElementById('apply-threshold-btn');
+        const resetThresholdBtn = document.getElementById('reset-threshold-btn');
+        const rxRateEl = document.getElementById('rx-rate');
+        const txLatencyEl = document.getElementById('tx-latency');
+        const txStateEl = document.getElementById('tx-state');
         const toastWrapEl = document.getElementById('toast-wrap');
         const logListEl = document.getElementById('log-list');
+        const exportLogsBtn = document.getElementById('export-logs-btn');
         const clearLogsBtn = document.getElementById('clear-logs-btn');
+        const allOffBtn = document.getElementById('all-off-btn');
+        const syncNowBtn = document.getElementById('sync-now-btn');
+        const warnDailyCountEl = document.getElementById('warn-daily-count');
+        const dangerDailyCountEl = document.getElementById('danger-daily-count');
 
         const bodyEl = document.body;
 
@@ -594,6 +1196,180 @@
             connection: 'warn'
         };
         let isManualLockedByAuto = null;
+        let pendingPatch = {};
+        let patchTimer = null;
+        let pendingChartSample = null;
+        let chartFrameId = null;
+        let lastSnapshotAt = 0;
+        const logStorageKey = 'iot_dashboard_logs_v2';
+        const themeStorageKey = 'iot_dashboard_theme_v1';
+        const modeStorageKey = 'iot_dashboard_mode_v1';
+        const thresholdStorageKey = 'iot_dashboard_threshold_v1';
+        let lastRendered = {
+            temp: '--',
+            hum: '--',
+            light: '--',
+            relay1: null,
+            relay2: null,
+            autoMode: null
+        };
+
+        const persistedLogs = [];
+    let activeThreshold = null;
+
+        function setTxState(state, text) {
+            txStateEl.className = `perf-value ${state}`;
+            txStateEl.textContent = text;
+        }
+
+        setTxState('tx-live', 'READY');
+
+        function getThresholdPresetConfig(presetName) {
+            const presets = {
+                balanced: {
+                    preset: 'balanced',
+                    tempWarn: 30,
+                    tempDanger: 35,
+                    humWarnLow: 35,
+                    humWarnHigh: 70,
+                    humDanger: 80,
+                    lightDanger: 25,
+                    lightWarnLow: 45,
+                    lightWarnHigh: 90
+                },
+                strict: {
+                    preset: 'strict',
+                    tempWarn: 28,
+                    tempDanger: 32,
+                    humWarnLow: 40,
+                    humWarnHigh: 65,
+                    humDanger: 75,
+                    lightDanger: 35,
+                    lightWarnLow: 55,
+                    lightWarnHigh: 85
+                },
+                relaxed: {
+                    preset: 'relaxed',
+                    tempWarn: 32,
+                    tempDanger: 38,
+                    humWarnLow: 30,
+                    humWarnHigh: 75,
+                    humDanger: 85,
+                    lightDanger: 18,
+                    lightWarnLow: 35,
+                    lightWarnHigh: 95
+                }
+            };
+
+            return presets[presetName] ? { ...presets[presetName] } : { ...presets.balanced };
+        }
+
+        function writeThresholdInputs(config) {
+            thresholdPresetEl.value = config.preset;
+            thTempWarnEl.value = config.tempWarn;
+            thTempDangerEl.value = config.tempDanger;
+            thHumWarnLowEl.value = config.humWarnLow;
+            thHumWarnHighEl.value = config.humWarnHigh;
+            thHumDangerEl.value = config.humDanger;
+            thLightDangerEl.value = config.lightDanger;
+            thLightWarnLowEl.value = config.lightWarnLow;
+            thLightWarnHighEl.value = config.lightWarnHigh;
+        }
+
+        function readThresholdInputs() {
+            return {
+                preset: thresholdPresetEl.value,
+                tempWarn: Number(thTempWarnEl.value),
+                tempDanger: Number(thTempDangerEl.value),
+                humWarnLow: Number(thHumWarnLowEl.value),
+                humWarnHigh: Number(thHumWarnHighEl.value),
+                humDanger: Number(thHumDangerEl.value),
+                lightDanger: Number(thLightDangerEl.value),
+                lightWarnLow: Number(thLightWarnLowEl.value),
+                lightWarnHigh: Number(thLightWarnHighEl.value)
+            };
+        }
+
+        function normalizeThreshold(config) {
+            const safe = { ...config };
+            if (!Number.isFinite(safe.tempWarn)) safe.tempWarn = 30;
+            if (!Number.isFinite(safe.tempDanger)) safe.tempDanger = 35;
+            if (!Number.isFinite(safe.humWarnLow)) safe.humWarnLow = 35;
+            if (!Number.isFinite(safe.humWarnHigh)) safe.humWarnHigh = 70;
+            if (!Number.isFinite(safe.humDanger)) safe.humDanger = 80;
+            if (!Number.isFinite(safe.lightDanger)) safe.lightDanger = 25;
+            if (!Number.isFinite(safe.lightWarnLow)) safe.lightWarnLow = 45;
+            if (!Number.isFinite(safe.lightWarnHigh)) safe.lightWarnHigh = 90;
+
+            if (safe.tempDanger <= safe.tempWarn) safe.tempDanger = safe.tempWarn + 1;
+            if (safe.humWarnHigh <= safe.humWarnLow) safe.humWarnHigh = safe.humWarnLow + 1;
+            if (safe.humDanger <= safe.humWarnHigh) safe.humDanger = safe.humWarnHigh + 1;
+            if (safe.lightWarnLow <= safe.lightDanger) safe.lightWarnLow = safe.lightDanger + 1;
+            if (safe.lightWarnHigh <= safe.lightWarnLow) safe.lightWarnHigh = safe.lightWarnLow + 1;
+            return safe;
+        }
+
+        function applyThresholdConfig(config, shouldPersist = true) {
+            activeThreshold = normalizeThreshold(config);
+            writeThresholdInputs(activeThreshold);
+
+            if (shouldPersist) {
+                localStorage.setItem(thresholdStorageKey, JSON.stringify(activeThreshold));
+                addLog(`อัปเดต Threshold เป็น preset: ${activeThreshold.preset}`, 'info');
+                showToast(`ใช้ Threshold: ${activeThreshold.preset.toUpperCase()}`, 'info');
+            }
+        }
+
+        function loadThresholdConfig() {
+            const raw = localStorage.getItem(thresholdStorageKey);
+            if (!raw) {
+                applyThresholdConfig(getThresholdPresetConfig('balanced'), false);
+                return;
+            }
+
+            try {
+                const parsed = JSON.parse(raw);
+                applyThresholdConfig(parsed, false);
+            } catch (error) {
+                console.error(error);
+                applyThresholdConfig(getThresholdPresetConfig('balanced'), false);
+            }
+        }
+
+        function setMode(modeName) {
+            const mode = modeName === 'light' ? 'light' : 'dark';
+            document.body.classList.remove('mode-dark', 'mode-light');
+            document.body.classList.add(`mode-${mode}`);
+
+            modeDarkBtn.classList.toggle('active', mode === 'dark');
+            modeLightBtn.classList.toggle('active', mode === 'light');
+
+            localStorage.setItem(modeStorageKey, mode);
+        }
+
+        function loadMode() {
+            const saved = localStorage.getItem(modeStorageKey);
+            setMode(saved === 'light' ? 'light' : 'dark');
+        }
+
+        function setTheme(themeName) {
+            document.body.classList.remove('theme-obsidian', 'theme-carbon', 'theme-neon');
+            document.body.classList.add(`theme-${themeName}`);
+
+            themeObsidianBtn.classList.toggle('active', themeName === 'obsidian');
+            themeCarbonBtn.classList.toggle('active', themeName === 'carbon');
+            themeNeonBtn.classList.toggle('active', themeName === 'neon');
+
+            localStorage.setItem(themeStorageKey, themeName);
+            addLog(`เปลี่ยนธีมเป็น ${themeName.toUpperCase()}`, 'info', false);
+        }
+
+        function loadTheme() {
+            const saved = localStorage.getItem(themeStorageKey);
+            const allowed = ['obsidian', 'carbon', 'neon'];
+            const theme = allowed.includes(saved) ? saved : 'obsidian';
+            setTheme(theme);
+        }
 
         function toNumberOrNull(value) {
             if (value === undefined || value === null || value === '') return null;
@@ -697,6 +1473,20 @@
             chart.update();
         }
 
+        function scheduleChartUpdate(light, temp, hum, timeLabel) {
+            pendingChartSample = { light, temp, hum, timeLabel };
+            if (chartFrameId !== null) return;
+
+            chartFrameId = window.requestAnimationFrame(() => {
+                chartFrameId = null;
+                if (!pendingChartSample) return;
+
+                pushChartPoint(lightChart, [pendingChartSample.light], pendingChartSample.timeLabel);
+                pushChartPoint(envChart, [pendingChartSample.temp, pendingChartSample.hum], pendingChartSample.timeLabel);
+                pendingChartSample = null;
+            });
+        }
+
         function updateLightMood(lightPercent) {
             if (lightPercent === null) {
                 lightMoodEl.textContent = 'กำลังประเมินสภาพแสง...';
@@ -725,29 +1515,50 @@
 
         function classifyTemp(temp) {
             if (temp === null) return { level: 'info', text: 'รอข้อมูล' };
-            if (temp >= 35) return { level: 'danger', text: `ร้อนจัด ${temp.toFixed(1)}°C` };
-            if (temp >= 30) return { level: 'warn', text: `เริ่มร้อน ${temp.toFixed(1)}°C` };
+            if (temp >= activeThreshold.tempDanger) return { level: 'danger', text: `ร้อนจัด ${temp.toFixed(1)}°C` };
+            if (temp >= activeThreshold.tempWarn) return { level: 'warn', text: `เริ่มร้อน ${temp.toFixed(1)}°C` };
             if (temp < 20) return { level: 'info', text: `ค่อนข้างเย็น ${temp.toFixed(1)}°C` };
             return { level: 'good', text: `ปกติ ${temp.toFixed(1)}°C` };
         }
 
         function classifyHum(hum) {
             if (hum === null) return { level: 'info', text: 'รอข้อมูล' };
-            if (hum >= 80) return { level: 'danger', text: `ชื้นมาก ${hum.toFixed(1)}%` };
-            if (hum >= 70 || hum < 35) return { level: 'warn', text: `ต้องเฝ้าระวัง ${hum.toFixed(1)}%` };
+            if (hum >= activeThreshold.humDanger) return { level: 'danger', text: `ชื้นมาก ${hum.toFixed(1)}%` };
+            if (hum >= activeThreshold.humWarnHigh || hum < activeThreshold.humWarnLow) return { level: 'warn', text: `ต้องเฝ้าระวัง ${hum.toFixed(1)}%` };
             return { level: 'good', text: `ปกติ ${hum.toFixed(1)}%` };
         }
 
         function classifyLight(light) {
             if (light === null) return { level: 'info', text: 'รอข้อมูล' };
-            if (light < 25) return { level: 'danger', text: `มืดมาก ${light.toFixed(0)}%` };
-            if (light < 45 || light > 90) return { level: 'warn', text: `ค่าผันผวน ${light.toFixed(0)}%` };
+            if (light < activeThreshold.lightDanger) return { level: 'danger', text: `มืดมาก ${light.toFixed(0)}%` };
+            if (light < activeThreshold.lightWarnLow || light > activeThreshold.lightWarnHigh) return { level: 'warn', text: `ค่าผันผวน ${light.toFixed(0)}%` };
             return { level: 'good', text: `ปกติ ${light.toFixed(0)}%` };
         }
 
-        function setStatusChip(el, result) {
+        function getSensorChipClass(sensorKey, level) {
+            if (sensorKey === 'temp' && level === 'warn') return 'chip-temp-warn';
+            if (sensorKey === 'temp' && level === 'danger') return 'chip-temp-danger';
+            if (sensorKey === 'hum' && level === 'warn') return 'chip-hum-warn';
+            if (sensorKey === 'hum' && level === 'danger') return 'chip-hum-danger';
+            if (sensorKey === 'light' && level === 'warn') return 'chip-light-warn';
+            if (sensorKey === 'light' && level === 'danger') return 'chip-light-danger';
+            return '';
+        }
+
+        function getSensorToastClass(sensorKey, level) {
+            if (sensorKey === 'temp' && level === 'warn') return 'toast-temp-warn';
+            if (sensorKey === 'temp' && level === 'danger') return 'toast-temp-danger';
+            if (sensorKey === 'hum' && level === 'warn') return 'toast-hum-warn';
+            if (sensorKey === 'hum' && level === 'danger') return 'toast-hum-danger';
+            if (sensorKey === 'light' && level === 'warn') return 'toast-light-warn';
+            if (sensorKey === 'light' && level === 'danger') return 'toast-light-danger';
+            return '';
+        }
+
+        function setStatusChip(el, result, sensorKey = '') {
             const meta = getLevelMeta(result.level);
-            el.className = `status-chip ${meta.chip}`;
+            const sensorChipClass = getSensorChipClass(sensorKey, result.level);
+            el.className = `status-chip ${meta.chip} ${sensorChipClass}`;
             el.innerHTML = `<span class="status-dot ${meta.dot}"></span>${result.text}`;
         }
 
@@ -758,22 +1569,91 @@
             return `${date} ${time}`;
         }
 
-        function addLog(message, level = 'info') {
-            const meta = getLevelMeta(level);
+        function persistLogs() {
+            localStorage.setItem(logStorageKey, JSON.stringify(persistedLogs));
+        }
+
+        function getTodayPrefix() {
+            return new Date().toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit' });
+        }
+
+        function refreshDailySummary() {
+            const todayPrefix = getTodayPrefix();
+            let warnCount = 0;
+            let dangerCount = 0;
+
+            persistedLogs.forEach((entry) => {
+                if (!entry.time.startsWith(todayPrefix)) return;
+                if (entry.level === 'warn') warnCount += 1;
+                if (entry.level === 'danger') dangerCount += 1;
+            });
+
+            warnDailyCountEl.textContent = String(warnCount);
+            dangerDailyCountEl.textContent = String(dangerCount);
+        }
+
+        function renderLogItem(entry) {
+            const meta = getLevelMeta(entry.level);
             const item = document.createElement('div');
             item.className = `log-item ${meta.log}`;
-            item.innerHTML = `${message}<span class="log-time">${makeTimeStamp()}</span>`;
+            item.innerHTML = `${entry.message}<span class="log-time">${entry.time}</span>`;
+            return item;
+        }
+
+        function loadPersistedLogs() {
+            const raw = localStorage.getItem(logStorageKey);
+            if (!raw) return;
+
+            try {
+                const parsed = JSON.parse(raw);
+                if (!Array.isArray(parsed)) return;
+
+                parsed.forEach((entry) => {
+                    if (!entry || typeof entry.message !== 'string' || typeof entry.level !== 'string' || typeof entry.time !== 'string') {
+                        return;
+                    }
+                    persistedLogs.push(entry);
+                });
+
+                const reversed = [...persistedLogs].reverse();
+                reversed.forEach((entry) => {
+                    logListEl.appendChild(renderLogItem(entry));
+                });
+                refreshDailySummary();
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        function addLog(message, level = 'info', save = true) {
+            const meta = getLevelMeta(level);
+            const entry = {
+                message,
+                level,
+                time: makeTimeStamp()
+            };
+
+            const item = renderLogItem(entry);
             logListEl.prepend(item);
+
+            if (save) {
+                persistedLogs.push(entry);
+                while (persistedLogs.length > maxLogItems) {
+                    persistedLogs.shift();
+                }
+                persistLogs();
+                refreshDailySummary();
+            }
 
             while (logListEl.children.length > maxLogItems) {
                 logListEl.removeChild(logListEl.lastChild);
             }
         }
 
-        function showToast(message, level = 'info') {
+        function showToast(message, level = 'info', customClass = '') {
             const meta = getLevelMeta(level);
             const toast = document.createElement('div');
-            toast.className = `toast ${meta.toast}`;
+            toast.className = `toast ${meta.toast} ${customClass}`;
             toast.textContent = message;
             toastWrapEl.appendChild(toast);
 
@@ -785,16 +1665,50 @@
             }, 3200);
         }
 
+        function exportLogsToCsv() {
+            if (!persistedLogs.length) {
+                showToast('ไม่มี Log สำหรับ Export', 'warn');
+                return;
+            }
+
+            const escapeCsv = (value) => {
+                const str = String(value ?? '');
+                if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+                    return `"${str.replace(/"/g, '""')}"`;
+                }
+                return str;
+            };
+
+            const rows = ['time,level,message'];
+            persistedLogs.forEach((entry) => {
+                rows.push([escapeCsv(entry.time), escapeCsv(entry.level), escapeCsv(entry.message)].join(','));
+            });
+
+            const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `iot-logs-${new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+
+            showToast('Export Log เป็น CSV สำเร็จ', 'good');
+            addLog('ส่งออก Log เป็น CSV', 'info');
+        }
+
         function pushStatusIfChanged(sensorKey, result, label) {
             if (lastLevelState[sensorKey] !== result.level) {
                 const meta = getLevelMeta(result.level);
                 const notifyText = `${label}: ${result.text}`;
-                showToast(notifyText, result.level);
+                const sensorToastClass = getSensorToastClass(sensorKey, result.level);
+                showToast(notifyText, result.level, sensorToastClass);
                 addLog(notifyText, result.level);
                 lastLevelState[sensorKey] = result.level;
 
                 if (result.level === 'danger') {
-                    showToast(`แจ้งเตือนด่วน ${label} อยู่ในช่วงวิกฤต`, 'danger');
+                    showToast(`แจ้งเตือนด่วน ${label} อยู่ในช่วงวิกฤต`, 'danger', sensorToastClass);
                 } else if (result.level === 'good' && meta.label === 'ปกติ') {
                     addLog(`${label} กลับสู่ค่าปกติแล้ว`, 'good');
                 }
@@ -825,6 +1739,8 @@
                 showToast(`การเชื่อมต่อผิดพลาด: ${message}`, 'danger');
                 lastLevelState.connection = 'danger';
             }
+
+            setTxState('tx-fail', 'OFFLINE');
         }
 
         function setManualLockState(autoMode) {
@@ -859,30 +1775,107 @@
             }
         }
 
+        function updateRxRate() {
+            const now = performance.now();
+            if (lastSnapshotAt > 0) {
+                const hz = 1000 / Math.max(1, now - lastSnapshotAt);
+                rxRateEl.textContent = `${hz.toFixed(1)} /s`;
+            }
+            lastSnapshotAt = now;
+        }
+
+        function renderSensorValues(temp, hum, light) {
+            const nextTemp = temp === null ? '--' : temp.toFixed(1);
+            const nextHum = hum === null ? '--' : hum.toFixed(1);
+            const nextLight = light === null ? '--' : light.toFixed(0);
+
+            if (lastRendered.temp !== nextTemp) {
+                tempEl.innerText = nextTemp;
+                lastRendered.temp = nextTemp;
+            }
+            if (lastRendered.hum !== nextHum) {
+                humEl.innerText = nextHum;
+                lastRendered.hum = nextHum;
+            }
+            if (lastRendered.light !== nextLight) {
+                lightEl.innerText = nextLight;
+                lastRendered.light = nextLight;
+            }
+        }
+
+        function applyOptimisticSwitchState(patch) {
+            if (Object.prototype.hasOwnProperty.call(patch, 'relay1')) {
+                toggleRelay1.checked = Boolean(patch.relay1);
+            }
+            if (Object.prototype.hasOwnProperty.call(patch, 'relay2')) {
+                toggleRelay2.checked = Boolean(patch.relay2);
+            }
+            if (Object.prototype.hasOwnProperty.call(patch, 'auto_mode')) {
+                toggleAuto.checked = Boolean(patch.auto_mode);
+                setManualLockState(Boolean(patch.auto_mode));
+            }
+        }
+
+        async function flushPendingPatch() {
+            if (!Object.keys(pendingPatch).length) {
+                patchTimer = null;
+                return;
+            }
+
+            const patch = pendingPatch;
+            pendingPatch = {};
+            patchTimer = null;
+            setTxState('tx-pending', 'SENDING');
+
+            const t0 = performance.now();
+            try {
+                await update(ref(db, 'iot_data'), patch);
+                const latency = performance.now() - t0;
+                txLatencyEl.textContent = `${latency.toFixed(0)} ms`;
+                setTxState('tx-ok', 'DELIVERED');
+                window.setTimeout(() => setTxState('tx-live', 'READY'), 550);
+            } catch (error) {
+                console.error(error);
+                setTxState('tx-fail', 'FAILED');
+                showToast('ส่งคำสั่งไม่สำเร็จ ลองใหม่อีกครั้ง', 'danger');
+                addLog('ส่งคำสั่งไป Firebase ไม่สำเร็จ', 'danger');
+            }
+        }
+
+        function queueDevicePatch(patch) {
+            pendingPatch = { ...pendingPatch, ...patch };
+            applyOptimisticSwitchState(patch);
+            setTxState('tx-pending', 'QUEUE');
+
+            if (patchTimer !== null) {
+                window.clearTimeout(patchTimer);
+            }
+            patchTimer = window.setTimeout(flushPendingPatch, 70);
+        }
+
         // ดึงข้อมูล Realtime จาก Firebase (/iot_data)
         const dbRef = ref(db, 'iot_data');
         onValue(dbRef, (snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.val();
                 setConnectedStatus();
+                updateRxRate();
 
                 const temp = toNumberOrNull(data.temperature);
                 const hum = toNumberOrNull(data.humidity);
                 const light = toNumberOrNull(data.light_percent);
 
-                // แสดงค่าตัวเลข
-                tempEl.innerText = temp === null ? '--' : temp.toFixed(1);
-                humEl.innerText = hum === null ? '--' : hum.toFixed(1);
-                lightEl.innerText = light === null ? '--' : light.toFixed(0);
+                // แสดงค่าตัวเลข (render เฉพาะค่าที่เปลี่ยน)
+                renderSensorValues(temp, hum, light);
                 updateLightMood(light);
 
                 const tempResult = classifyTemp(temp);
                 const humResult = classifyHum(hum);
                 const lightResult = classifyLight(light);
 
-                setStatusChip(tempStatusEl, tempResult);
-                setStatusChip(humStatusEl, humResult);
-                setStatusChip(lightStatusEl, lightResult);
+                setStatusChip(tempStatusEl, tempResult, 'temp');
+                setStatusChip(humStatusEl, humResult, 'hum');
+                setStatusChip(lightStatusEl, lightResult, 'light');
 
                 pushStatusIfChanged('temp', tempResult, 'อุณหภูมิ');
                 pushStatusIfChanged('hum', humResult, 'ความชื้น');
@@ -893,16 +1886,24 @@
                 const autoMode = Boolean(data.auto_mode);
 
                 // อัปเดตสถานะปุ่ม (ป้องกันการวนลูปถ้าเรากดเอง)
-                if (document.activeElement !== toggleRelay1) toggleRelay1.checked = relay1;
-                if (document.activeElement !== toggleRelay2) toggleRelay2.checked = relay2;
-                if (document.activeElement !== toggleAuto) toggleAuto.checked = autoMode;
+                if (document.activeElement !== toggleRelay1 && lastRendered.relay1 !== relay1) {
+                    toggleRelay1.checked = relay1;
+                    lastRendered.relay1 = relay1;
+                }
+                if (document.activeElement !== toggleRelay2 && lastRendered.relay2 !== relay2) {
+                    toggleRelay2.checked = relay2;
+                    lastRendered.relay2 = relay2;
+                }
+                if (document.activeElement !== toggleAuto && lastRendered.autoMode !== autoMode) {
+                    toggleAuto.checked = autoMode;
+                    lastRendered.autoMode = autoMode;
+                }
 
                 // ล็อกการควบคุมแบบแมนนวลทั้งหมด เมื่อโหมด Auto ทำงาน
                 setManualLockState(autoMode);
 
                 const timeLabel = getTimeString();
-                pushChartPoint(lightChart, [light], timeLabel);
-                pushChartPoint(envChart, [temp, hum], timeLabel);
+                scheduleChartUpdate(light, temp, hum, timeLabel);
             } else {
                 setErrorStatus('ยังไม่พบข้อมูลใน iot_data');
                 addLog('ยังไม่พบข้อมูลเซนเซอร์ในโหนด iot_data', 'warn');
@@ -920,7 +1921,7 @@
                 addLog('บล็อกคำสั่ง Relay 1 เพราะเปิด Auto อยู่', 'warn');
                 return;
             }
-            set(ref(db, 'iot_data/relay1'), e.target.checked);
+            queueDevicePatch({ relay1: e.target.checked });
             const text = e.target.checked ? 'เปิดหลอดไฟ (Relay 1)' : 'ปิดหลอดไฟ (Relay 1)';
             addLog(text, 'info');
             showToast(text, 'info');
@@ -933,26 +1934,75 @@
                 addLog('บล็อกคำสั่ง Relay 2 เพราะเปิด Auto อยู่', 'warn');
                 return;
             }
-            set(ref(db, 'iot_data/relay2'), e.target.checked);
+            queueDevicePatch({ relay2: e.target.checked });
             const text = e.target.checked ? 'เปิดพัดลม (Relay 2)' : 'ปิดพัดลม (Relay 2)';
             addLog(text, 'info');
             showToast(text, 'info');
         });
 
         toggleAuto.addEventListener('change', (e) => {
-            set(ref(db, 'iot_data/auto_mode'), e.target.checked);
+            queueDevicePatch({ auto_mode: e.target.checked });
             const text = e.target.checked ? 'เปิดโหมด Auto' : 'ปิดโหมด Auto';
             addLog(text, e.target.checked ? 'good' : 'warn');
             showToast(text, e.target.checked ? 'good' : 'warn');
         });
 
+        allOffBtn.addEventListener('click', () => {
+            queueDevicePatch({ relay1: false, relay2: false, auto_mode: false });
+            addLog('Quick Action: ปิดอุปกรณ์ทั้งหมดและปิด Auto', 'warn');
+            showToast('ปิดอุปกรณ์ทั้งหมดแล้ว', 'warn');
+        });
+
+        syncNowBtn.addEventListener('click', () => {
+            if (patchTimer !== null) {
+                window.clearTimeout(patchTimer);
+            }
+            flushPendingPatch();
+            addLog('Quick Action: สั่ง Sync ทันที', 'info');
+            showToast('กำลัง Sync ข้อมูลทันที', 'info');
+        });
+
         clearLogsBtn.addEventListener('click', () => {
             logListEl.innerHTML = '';
+            persistedLogs.length = 0;
+            persistLogs();
+            refreshDailySummary();
             addLog('ล้าง Log ย้อนหลังแล้ว', 'info');
             showToast('ล้าง Log เรียบร้อย', 'info');
         });
 
-        addLog('ระบบเริ่มทำงานและรอข้อมูลจาก Firebase', 'info');
+        exportLogsBtn.addEventListener('click', exportLogsToCsv);
+
+        themeObsidianBtn.addEventListener('click', () => setTheme('obsidian'));
+        themeCarbonBtn.addEventListener('click', () => setTheme('carbon'));
+        themeNeonBtn.addEventListener('click', () => setTheme('neon'));
+        modeDarkBtn.addEventListener('click', () => setMode('dark'));
+        modeLightBtn.addEventListener('click', () => setMode('light'));
+
+        thresholdPresetEl.addEventListener('change', (e) => {
+            const presetConfig = getThresholdPresetConfig(e.target.value);
+            writeThresholdInputs(presetConfig);
+            applyThresholdConfig(presetConfig);
+        });
+
+        applyThresholdBtn.addEventListener('click', () => {
+            applyThresholdConfig(readThresholdInputs());
+        });
+
+        resetThresholdBtn.addEventListener('click', () => {
+            const presetConfig = getThresholdPresetConfig('balanced');
+            applyThresholdConfig(presetConfig);
+        });
+
+        loadMode();
+        loadTheme();
+        loadThresholdConfig();
+        loadPersistedLogs();
+        refreshDailySummary();
+
+        if (persistedLogs.length === 0) {
+            addLog('ระบบเริ่มทำงานและรอข้อมูลจาก Firebase', 'info');
+        }
 
     </script>
 </body>
