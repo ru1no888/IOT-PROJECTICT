@@ -1,2009 +1,361 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IoT Smart Light Dashboard</title>
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap');
-        :root {
-            --bg-1: #040507;
-            --bg-2: #090c12;
-            --bg-3: #101621;
-            --card: rgba(11, 16, 24, 0.82);
-            --line: rgba(148, 163, 184, 0.16);
-            --text: #e6edf7;
-            --muted: #94a3b8;
-            --accent: #f59e0b;
-            --accent-2: #22d3ee;
-            --light-glow: 0.28;
-        }
-
-        body.theme-obsidian {
-            --bg-1: #040507;
-            --bg-2: #090c12;
-            --bg-3: #101621;
-            --card: rgba(11, 16, 24, 0.82);
-            --line: rgba(148, 163, 184, 0.16);
-            --text: #e6edf7;
-            --muted: #94a3b8;
-            --accent: #f59e0b;
-            --accent-2: #22d3ee;
-        }
-
-        body.theme-carbon {
-            --bg-1: #050505;
-            --bg-2: #111111;
-            --bg-3: #1a1a1d;
-            --card: rgba(20, 20, 22, 0.84);
-            --line: rgba(156, 163, 175, 0.2);
-            --text: #f3f4f6;
-            --muted: #9ca3af;
-            --accent: #fb7185;
-            --accent-2: #60a5fa;
-        }
-
-        body.theme-neon {
-            --bg-1: #02030b;
-            --bg-2: #071226;
-            --bg-3: #111135;
-            --card: rgba(5, 10, 27, 0.86);
-            --line: rgba(56, 189, 248, 0.26);
-            --text: #ecfeff;
-            --muted: #a5f3fc;
-            --accent: #22d3ee;
-            --accent-2: #a78bfa;
-        }
-
-        body.mode-light {
-            --bg-1: #f3f8ff;
-            --bg-2: #f7fbff;
-            --bg-3: #e9f4ff;
-            --card: rgba(255, 255, 255, 0.86);
-            --line: rgba(15, 23, 42, 0.12);
-            --text: #0f172a;
-            --muted: #475569;
-            --light-glow: 0.35;
-        }
-
-        * { box-sizing: border-box; }
-
-        body {
-            font-family: 'Kanit', sans-serif;
-            color: var(--text);
-            background:
-                radial-gradient(circle at 8% 10%, rgba(245, 158, 11, 0.2), transparent 28%),
-                radial-gradient(circle at 90% 12%, rgba(34, 211, 238, 0.12), transparent 26%),
-                radial-gradient(circle at 70% 80%, rgba(168, 85, 247, 0.12), transparent 24%),
-                linear-gradient(140deg, var(--bg-1), var(--bg-2) 54%, var(--bg-3));
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
-            background-size: 42px 42px;
-            mask-image: radial-gradient(circle at 50% 40%, #000 45%, transparent 95%);
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .sticker-cloud {
-            position: fixed;
-            width: 88px;
-            height: 88px;
-            border-radius: 22px;
-            display: grid;
-            place-items: center;
-            font-size: 1.75rem;
-            font-weight: 600;
-            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
-            transform: rotate(-7deg);
-            animation: floatY 5.5s ease-in-out infinite;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .sticker-1 { top: 12%; left: 2%; background: linear-gradient(135deg, #ffd54f, #ffb300); }
-        .sticker-2 { top: 16%; right: 3%; background: linear-gradient(135deg, #67e8f9, #0891b2); animation-delay: 1.2s; }
-        .sticker-3 { bottom: 10%; right: 6%; background: linear-gradient(135deg, #a78bfa, #7c3aed); animation-delay: 2.1s; }
-
-        .glass-card {
-            background: var(--card);
-            border: 1px solid var(--line);
-            border-radius: 1.25rem;
-            box-shadow: 0 18px 38px rgba(0, 0, 0, 0.36);
-            backdrop-filter: blur(12px);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .glass-card::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(120deg, rgba(255, 255, 255, 0.07), transparent 45%, rgba(56, 189, 248, 0.06));
-            pointer-events: none;
-        }
-
-        .glass-card:hover {
-            border-color: rgba(56, 189, 248, 0.25);
-            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
-        }
-
-        .neon-frame {
-            box-shadow:
-                inset 0 0 0 1px rgba(56, 189, 248, 0.12),
-                0 0 0 1px rgba(34, 211, 238, 0.06),
-                0 20px 40px rgba(0, 0, 0, 0.45);
-        }
-
-        .hero-title {
-            letter-spacing: 0.01em;
-            line-height: 1.1;
-            text-wrap: balance;
-        }
-
-        .status-badge {
-            border-radius: 999px;
-            padding: 0.55rem 1rem;
-            font-weight: 500;
-            font-size: 0.9rem;
-            border: 1px solid rgba(148, 163, 184, 0.26);
-            background: rgba(15, 23, 42, 0.7);
-        }
-
-        .metric-card {
-            transition: transform 0.28s ease, box-shadow 0.28s ease;
-        }
-
-        .metric-card:hover {
-            transform: translateY(-5px) scale(1.01);
-            box-shadow: 0 18px 35px rgba(6, 21, 35, 0.15);
-        }
-
-        .sticker-pill {
-            border-radius: 999px;
-            border: 1px solid rgba(148, 163, 184, 0.3);
-            background: rgba(15, 23, 42, 0.76);
-            color: #dbeafe;
-            font-size: 0.8rem;
-            padding: 0.35rem 0.65rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
-            margin-right: 0.35rem;
-            margin-top: 0.35rem;
-        }
-
-        .theme-switcher {
-            margin-top: 0.8rem;
-            display: inline-flex;
-            padding: 0.28rem;
-            border-radius: 999px;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(148, 163, 184, 0.3);
-            gap: 0.3rem;
-            flex-wrap: wrap;
-        }
-
-        .theme-btn {
-            border: 1px solid rgba(148, 163, 184, 0.3);
-            border-radius: 999px;
-            background: rgba(15, 23, 42, 0.65);
-            color: #dbeafe;
-            padding: 0.26rem 0.65rem;
-            font-size: 0.74rem;
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-
-        .theme-btn:hover {
-            border-color: rgba(34, 211, 238, 0.6);
-            transform: translateY(-1px);
-        }
-
-        .theme-btn.active {
-            border-color: rgba(34, 211, 238, 0.8);
-            background: linear-gradient(120deg, rgba(34, 211, 238, 0.2), rgba(167, 139, 250, 0.2));
-            color: #ffffff;
-            box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.35);
-        }
-
-        .mode-switcher {
-            margin-top: 0.55rem;
-            display: inline-flex;
-            border-radius: 999px;
-            border: 1px solid rgba(148, 163, 184, 0.32);
-            background: rgba(15, 23, 42, 0.65);
-            padding: 0.25rem;
-            gap: 0.28rem;
-        }
-
-        .mode-btn {
-            border: 1px solid rgba(148, 163, 184, 0.3);
-            border-radius: 999px;
-            background: rgba(15, 23, 42, 0.66);
-            color: #dbeafe;
-            padding: 0.24rem 0.62rem;
-            font-size: 0.72rem;
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-
-        .mode-btn.active {
-            border-color: rgba(56, 189, 248, 0.82);
-            background: linear-gradient(120deg, rgba(56, 189, 248, 0.25), rgba(45, 212, 191, 0.22));
-            color: #ffffff;
-            box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.36);
-        }
-
-        .perf-grid {
-            margin-top: 0.9rem;
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 0.55rem;
-        }
-
-        .perf-chip {
-            border: 1px solid rgba(148, 163, 184, 0.24);
-            background: rgba(2, 6, 23, 0.72);
-            border-radius: 0.75rem;
-            padding: 0.45rem 0.6rem;
-            font-size: 0.74rem;
-            color: #c7d2e5;
-        }
-
-        .perf-value {
-            display: block;
-            margin-top: 0.12rem;
-            font-size: 0.92rem;
-            font-weight: 700;
-            color: #f8fafc;
-        }
-
-        .tx-live {
-            color: #22d3ee;
-            text-shadow: 0 0 14px rgba(34, 211, 238, 0.38);
-        }
-
-        .tx-pending {
-            color: #fbbf24;
-            text-shadow: 0 0 14px rgba(251, 191, 36, 0.38);
-        }
-
-        .tx-ok {
-            color: #4ade80;
-            text-shadow: 0 0 14px rgba(74, 222, 128, 0.38);
-        }
-
-        .tx-fail {
-            color: #f87171;
-            text-shadow: 0 0 14px rgba(248, 113, 113, 0.38);
-        }
-
-        .light-aura {
-            position: absolute;
-            inset: auto -25% -35% auto;
-            width: 250px;
-            height: 250px;
-            border-radius: 999px;
-            background: radial-gradient(circle, rgba(245, 158, 11, calc(var(--light-glow))) 0%, rgba(245, 158, 11, 0) 70%);
-            pointer-events: none;
-            transition: opacity 0.35s ease;
-        }
-
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 54px;
-            height: 30px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            inset: 0;
-            cursor: pointer;
-            background: #334155;
-            border-radius: 999px;
-            transition: 0.25s;
-        }
-
-        .slider:before {
-            content: '';
-            position: absolute;
-            height: 22px;
-            width: 22px;
-            left: 4px;
-            bottom: 4px;
-            background: #fff;
-            border-radius: 50%;
-            transition: 0.25s;
-            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .switch input:checked + .slider {
-            background: linear-gradient(90deg, #06b6d4, #22c55e);
-        }
-
-        .switch input:checked + .slider:before {
-            transform: translateX(24px);
-        }
-
-        .switch input:disabled + .slider {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .fade-in-up {
-            animation: fadeInUp 0.65s ease both;
-        }
-
-        .status-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.45rem;
-            padding: 0.36rem 0.72rem;
-            border-radius: 999px;
-            font-size: 0.78rem;
-            font-weight: 600;
-            border: 1px solid transparent;
-            transition: all 0.25s ease;
-            white-space: nowrap;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 999px;
-            display: inline-block;
-            animation: dotPulse 1.5s ease-in-out infinite;
-        }
-
-        .status-good {
-            background: #dcfce7;
-            color: #166534;
-            border-color: #86efac;
-        }
-
-        .status-warn {
-            background: #fef3c7;
-            color: #92400e;
-            border-color: #fcd34d;
-        }
-
-        .status-danger {
-            background: #fee2e2;
-            color: #991b1b;
-            border-color: #fca5a5;
-        }
-
-        .status-info {
-            background: #dbeafe;
-            color: #1e3a8a;
-            border-color: #93c5fd;
-        }
-
-        .chip-temp-warn {
-            background: rgba(251, 146, 60, 0.2);
-            color: #fdba74;
-            border-color: rgba(251, 146, 60, 0.45);
-        }
-
-        .chip-temp-danger {
-            background: rgba(239, 68, 68, 0.24);
-            color: #fca5a5;
-            border-color: rgba(248, 113, 113, 0.6);
-            box-shadow: 0 0 20px rgba(239, 68, 68, 0.26);
-        }
-
-        .chip-hum-warn {
-            background: rgba(59, 130, 246, 0.2);
-            color: #93c5fd;
-            border-color: rgba(96, 165, 250, 0.45);
-        }
-
-        .chip-hum-danger {
-            background: rgba(6, 182, 212, 0.24);
-            color: #67e8f9;
-            border-color: rgba(34, 211, 238, 0.62);
-            box-shadow: 0 0 20px rgba(34, 211, 238, 0.26);
-        }
-
-        .chip-light-warn {
-            background: rgba(250, 204, 21, 0.18);
-            color: #fde047;
-            border-color: rgba(250, 204, 21, 0.44);
-        }
-
-        .chip-light-danger {
-            background: rgba(244, 63, 94, 0.22);
-            color: #fda4af;
-            border-color: rgba(251, 113, 133, 0.58);
-            box-shadow: 0 0 20px rgba(244, 63, 94, 0.22);
-        }
-
-        .dot-good { background: #22c55e; }
-        .dot-warn { background: #f59e0b; }
-        .dot-danger { background: #ef4444; }
-        .dot-info { background: #3b82f6; }
-
-        .status-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 0.6rem;
-            border-bottom: 1px dashed rgba(71, 96, 111, 0.2);
-            padding: 0.7rem 0;
-        }
-
-        .status-row:last-child {
-            border-bottom: none;
-        }
-
-        .manual-lock-note {
-            margin-top: 0.85rem;
-            border-radius: 0.75rem;
-            padding: 0.55rem 0.7rem;
-            font-size: 0.78rem;
-            font-weight: 500;
-            line-height: 1.35;
-            border: 1px solid transparent;
-            transition: all 0.25s ease;
-        }
-
-        .manual-lock-note i {
-            animation: lockPulse 1.5s ease-in-out infinite;
-        }
-
-        .manual-lock-on {
-            background: rgba(251, 191, 36, 0.12);
-            color: #fbbf24;
-            border-color: rgba(251, 191, 36, 0.28);
-        }
-
-        .manual-lock-off {
-            background: rgba(34, 197, 94, 0.12);
-            color: #86efac;
-            border-color: rgba(74, 222, 128, 0.3);
-        }
-
-        .log-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.55rem;
-            max-height: 320px;
-            overflow-y: auto;
-            padding-right: 0.25rem;
-        }
-
-        .log-item {
-            border-radius: 0.7rem;
-            border-left: 4px solid #cbd5e1;
-            background: rgba(15, 23, 42, 0.78);
-            padding: 0.6rem 0.7rem;
-            font-size: 0.82rem;
-            color: #d2deef;
-            line-height: 1.3;
-            animation: fadeInUp 0.32s ease;
-        }
-
-        .log-time {
-            font-size: 0.72rem;
-            color: #8ea1b8;
-            display: block;
-            margin-top: 0.15rem;
-        }
-
-        .log-good { border-left-color: #22c55e; }
-        .log-warn { border-left-color: #f59e0b; }
-        .log-danger { border-left-color: #ef4444; }
-        .log-info { border-left-color: #3b82f6; }
-
-        .toast-wrap {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            z-index: 60;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            width: min(92vw, 340px);
-        }
-
-        .toast {
-            border-radius: 0.85rem;
-            color: #fff;
-            padding: 0.7rem 0.85rem;
-            box-shadow: 0 12px 26px rgba(8, 22, 36, 0.28);
-            font-size: 0.84rem;
-            animation: toastIn 0.28s ease;
-        }
-
-        .toast-good { background: linear-gradient(135deg, #16a34a, #22c55e); }
-        .toast-warn { background: linear-gradient(135deg, #d97706, #f59e0b); }
-        .toast-danger { background: linear-gradient(135deg, #dc2626, #ef4444); }
-        .toast-info { background: linear-gradient(135deg, #2563eb, #3b82f6); }
-        .toast-temp-warn { background: linear-gradient(135deg, #ea580c, #f97316); }
-        .toast-temp-danger { background: linear-gradient(135deg, #b91c1c, #ef4444); }
-        .toast-hum-warn { background: linear-gradient(135deg, #2563eb, #06b6d4); }
-        .toast-hum-danger { background: linear-gradient(135deg, #0e7490, #06b6d4); }
-        .toast-light-warn { background: linear-gradient(135deg, #ca8a04, #eab308); }
-        .toast-light-danger { background: linear-gradient(135deg, #be123c, #f43f5e); }
-
-        .magic-actions {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 0.55rem;
-            margin-top: 0.85rem;
-        }
-
-        .threshold-panel {
-            margin-top: 0.95rem;
-            border-radius: 0.9rem;
-            border: 1px solid rgba(148, 163, 184, 0.26);
-            background: rgba(2, 6, 23, 0.58);
-            padding: 0.7rem;
-        }
-
-        .threshold-panel h4 {
-            font-size: 0.86rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #e2e8f0;
-        }
-
-        .threshold-panel select,
-        .threshold-panel input {
-            width: 100%;
-            border-radius: 0.55rem;
-            border: 1px solid rgba(148, 163, 184, 0.3);
-            background: rgba(15, 23, 42, 0.76);
-            color: #e2e8f0;
-            padding: 0.34rem 0.46rem;
-            font-size: 0.75rem;
-            outline: none;
-        }
-
-        .threshold-grid {
-            margin-top: 0.55rem;
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 0.45rem;
-        }
-
-        .threshold-field {
-            display: flex;
-            flex-direction: column;
-            gap: 0.22rem;
-        }
-
-        .threshold-field label {
-            font-size: 0.68rem;
-            color: #9fb1c7;
-        }
-
-        .threshold-actions {
-            margin-top: 0.55rem;
-            display: flex;
-            gap: 0.42rem;
-        }
-
-        .threshold-btn {
-            flex: 1;
-            border: 1px solid rgba(148, 163, 184, 0.3);
-            border-radius: 0.62rem;
-            background: rgba(15, 23, 42, 0.8);
-            color: #e2e8f0;
-            font-size: 0.72rem;
-            font-weight: 600;
-            padding: 0.34rem 0.44rem;
-            transition: all 0.2s ease;
-        }
-
-        .threshold-btn:hover {
-            border-color: rgba(34, 211, 238, 0.65);
-        }
-
-        .mini-summary {
-            margin-top: 0.7rem;
-            border-radius: 0.8rem;
-            border: 1px solid rgba(148, 163, 184, 0.24);
-            background: rgba(2, 6, 23, 0.48);
-            padding: 0.6rem;
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 0.45rem;
-        }
-
-        .mini-item {
-            border-radius: 0.65rem;
-            padding: 0.45rem;
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            background: rgba(15, 23, 42, 0.58);
-        }
-
-        .mini-title {
-            font-size: 0.68rem;
-            color: #9fb1c7;
-        }
-
-        .mini-value {
-            display: block;
-            margin-top: 0.14rem;
-            font-size: 1rem;
-            font-weight: 700;
-            color: #f8fafc;
-        }
-
-        .mini-warn .mini-value { color: #facc15; }
-        .mini-danger .mini-value { color: #fb7185; }
-
-        .magic-btn {
-            border: 1px solid rgba(148, 163, 184, 0.28);
-            border-radius: 0.72rem;
-            background: rgba(15, 23, 42, 0.72);
-            color: #d7e3f5;
-            font-size: 0.78rem;
-            font-weight: 500;
-            padding: 0.45rem 0.6rem;
-            transition: all 0.22s ease;
-        }
-
-        .magic-btn:hover {
-            transform: translateY(-2px);
-            border-color: rgba(34, 211, 238, 0.46);
-            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.22);
-        }
-
-        @keyframes toastIn {
-            from { opacity: 0; transform: translateX(16px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        @keyframes dotPulse {
-            0%, 100% { opacity: 0.4; transform: scale(0.9); }
-            50% { opacity: 1; transform: scale(1.08); }
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(14px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes floatY {
-            0%, 100% { transform: translateY(0) rotate(-7deg); }
-            50% { transform: translateY(-10px) rotate(-4deg); }
-        }
-
-        @keyframes lockPulse {
-            0%, 100% { opacity: 0.65; }
-            50% { opacity: 1; }
-        }
-
-        @media (max-width: 768px) {
-            .sticker-cloud { display: none; }
-            .perf-grid { grid-template-columns: 1fr; }
-            .magic-actions { grid-template-columns: 1fr; }
-            .threshold-grid { grid-template-columns: 1fr; }
-            .mini-summary { grid-template-columns: 1fr; }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation: none !important;
-                transition: none !important;
-            }
-        }
-
-        .text-slate-800,
-        .text-slate-700,
-        .text-slate-600,
-        .text-slate-500 {
-            color: #c6d2e3 !important;
-        }
-
-        .text-slate-300 {
-            color: #9fb1c7 !important;
-        }
-
-        .bg-white\/70,
-        .bg-emerald-50,
-        .bg-slate-900,
-        .bg-amber-100,
-        .bg-red-100,
-        .bg-sky-100,
-        .bg-white\/90 {
-            background-color: rgba(15, 23, 42, 0.75) !important;
-            border-color: rgba(148, 163, 184, 0.22) !important;
-        }
-
-        .text-amber-700,
-        .text-amber-500,
-        .text-red-500,
-        .text-sky-500,
-        .text-cyan-600,
-        .text-emerald-600,
-        .text-emerald-800,
-        .text-emerald-700 {
-            color: #f8fafc !important;
-        }
-
-        #connection-status.bg-amber-100,
-        #connection-status.bg-emerald-100,
-        #connection-status.bg-rose-100 {
-            background: rgba(15, 23, 42, 0.78) !important;
-            color: #e2e8f0 !important;
-            border: 1px solid rgba(148, 163, 184, 0.25);
-        }
-
-        #relay1-wrapper,
-        #relay2-wrapper {
-            background: rgba(15, 23, 42, 0.76) !important;
-            border-color: rgba(148, 163, 184, 0.22) !important;
-        }
-
-        #clear-logs-btn {
-            background: rgba(30, 41, 59, 0.85) !important;
-            color: #dbeafe !important;
-            border: 1px solid rgba(148, 163, 184, 0.25);
-        }
-
-        #clear-logs-btn:hover {
-            background: rgba(51, 65, 85, 0.9) !important;
-        }
-
-        .log-list::-webkit-scrollbar {
-            width: 7px;
-        }
-
-        .log-list::-webkit-scrollbar-thumb {
-            background: rgba(148, 163, 184, 0.32);
-            border-radius: 999px;
-        }
-
-        body.mode-light .text-slate-800,
-        body.mode-light .text-slate-700,
-        body.mode-light .text-slate-600,
-        body.mode-light .text-slate-500,
-        body.mode-light .text-slate-300 {
-            color: #1e293b !important;
-        }
-
-        body.mode-light .sticker-pill,
-        body.mode-light .theme-switcher,
-        body.mode-light .theme-btn,
-        body.mode-light .mode-switcher,
-        body.mode-light .mode-btn,
-        body.mode-light .perf-chip,
-        body.mode-light .magic-btn,
-        body.mode-light .threshold-panel,
-        body.mode-light .threshold-panel select,
-        body.mode-light .threshold-panel input,
-        body.mode-light .threshold-btn,
-        body.mode-light .mini-item,
-        body.mode-light .log-item {
-            background: rgba(255, 255, 255, 0.88) !important;
-            color: #0f172a !important;
-            border-color: rgba(15, 23, 42, 0.16) !important;
-        }
-
-        body.mode-light .mini-title,
-        body.mode-light .threshold-field label,
-        body.mode-light .log-time {
-            color: #475569 !important;
-        }
-
-        body.mode-light #connection-status.bg-amber-100,
-        body.mode-light #connection-status.bg-emerald-100,
-        body.mode-light #connection-status.bg-rose-100,
-        body.mode-light #relay1-wrapper,
-        body.mode-light #relay2-wrapper,
-        body.mode-light .bg-emerald-50,
-        body.mode-light .bg-slate-900,
-        body.mode-light #clear-logs-btn {
-            background: rgba(255, 255, 255, 0.9) !important;
-            color: #0f172a !important;
-            border-color: rgba(15, 23, 42, 0.16) !important;
-        }
-
-        body.mode-light .status-badge {
-            color: #0f172a;
-            background: rgba(255, 255, 255, 0.9);
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body class="p-4 md:p-8">
-
     <div class="sticker-cloud sticker-1">💡</div>
     <div class="sticker-cloud sticker-2">📡</div>
     <div class="sticker-cloud sticker-3">⚡</div>
 
+    <div id="toast-wrap" class="toast-wrap" aria-live="polite"></div>
+
     <main class="max-w-7xl mx-auto relative z-10">
-        <div id="toast-wrap" class="toast-wrap" aria-live="polite"></div>
-
-        <header class="glass-card p-6 md:p-8 mb-6 fade-in-up">
-            <div class="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
-                <div>
-                    <h1 class="hero-title text-3xl md:text-4xl font-semibold mb-2">
-                        <i class="fa-solid fa-sun text-amber-500 mr-2"></i>
-                        Light Intelligence Dashboard
+        <section id="view-login" class="auth-page">
+            <div class="max-w-5xl mx-auto auth-layout">
+                <article class="glass-card p-7 auth-hero">
+                    <div class="page-actions mb-3">
+                        <button data-lang-toggle type="button" class="page-btn">TH | EN</button>
+                    </div>
+                    <h1 class="text-3xl md:text-4xl font-semibold mb-3">
+                        <i class="fa-solid fa-shield-halved text-cyan-400 mr-2"></i>
+                        <span id="login-title-text">เข้าสู่ระบบ IoT Control</span>
                     </h1>
-                    <p class="text-slate-600">แดชบอร์ดวัดแสงแบบเรียลไทม์ พร้อมควบคุมอุปกรณ์ IoT และธีมทันสมัย</p>
-                    <div class="mt-3">
-                        <span class="sticker-pill"><i class="fa-solid fa-signal"></i>LIVE</span>
-                        <span class="sticker-pill"><i class="fa-solid fa-wand-magic-sparkles"></i>MODERN</span>
-                        <span class="sticker-pill"><i class="fa-solid fa-shield-heart"></i>STABLE</span>
+                    <p id="login-subtitle-text" class="text-slate-300 text-sm md:text-base"></p>
+                </article>
+
+                <article class="glass-card p-7 auth-panel">
+                    <div class="auth-tabs mb-4">
+                        <button id="tab-login" type="button" class="auth-tab active">เข้าสู่ระบบ</button>
+                        <button id="tab-register" type="button" class="auth-tab">สมัครสมาชิก</button>
                     </div>
-                    <div class="theme-switcher" role="group" aria-label="Theme Switcher">
-                        <button id="theme-obsidian" class="theme-btn" type="button">Obsidian</button>
-                        <button id="theme-carbon" class="theme-btn" type="button">Carbon</button>
-                        <button id="theme-neon" class="theme-btn" type="button">Neon</button>
-                    </div>
-                    <div class="mode-switcher" role="group" aria-label="Mode Switcher">
-                        <button id="mode-dark" class="mode-btn" type="button">Dark</button>
-                        <button id="mode-light" class="mode-btn" type="button">Light</button>
-                    </div>
-                    <div class="perf-grid">
-                        <div class="perf-chip">
-                            RX Rate
-                            <span id="rx-rate" class="perf-value tx-live">-- /s</span>
-                        </div>
-                        <div class="perf-chip">
-                            TX Latency
-                            <span id="tx-latency" class="perf-value">-- ms</span>
-                        </div>
-                        <div class="perf-chip">
-                            Command
-                            <span id="tx-state" class="perf-value tx-live">READY</span>
-                        </div>
-                    </div>
-                </div>
-                <div id="connection-status" class="status-badge bg-amber-100 text-amber-700 w-fit">
-                    <i class="fa-solid fa-circle-notch fa-spin mr-2"></i>กำลังเชื่อมต่อ Firebase...
-                </div>
+
+                    <form id="login-form" class="auth-form" autocomplete="on">
+                        <label id="login-email-label" class="auth-label">อีเมล</label>
+                        <input id="login-email" class="auth-input" type="email" required>
+                        <label id="login-password-label" class="auth-label">รหัสผ่าน</label>
+                        <input id="login-password" class="auth-input" type="password" required>
+                        <button id="login-submit" class="auth-submit" type="submit">Login</button>
+                    </form>
+
+                    <form id="register-form" class="auth-form hidden" autocomplete="on">
+                        <label id="register-name-label" class="auth-label">ชื่อที่แสดง</label>
+                        <input id="register-name" class="auth-input" type="text" minlength="2" required>
+                        <label id="register-email-label" class="auth-label">อีเมลใหม่</label>
+                        <input id="register-email" class="auth-input" type="email" required>
+                        <label id="register-password-label" class="auth-label">รหัสผ่าน</label>
+                        <input id="register-password" class="auth-input" type="password" minlength="6" required>
+                        <label id="register-confirm-label" class="auth-label">ยืนยันรหัสผ่าน</label>
+                        <input id="register-confirm" class="auth-input" type="password" minlength="6" required>
+                        <button id="register-submit" class="auth-submit" type="submit">Register</button>
+                    </form>
+
+                    <p id="auth-message" class="auth-message mt-4"></p>
+                </article>
             </div>
-        </header>
-
-        <section class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6 fade-in-up" style="animation-delay: 0.08s;">
-            <article class="glass-card metric-card p-5">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-slate-500">อุณหภูมิ</p>
-                        <p class="text-3xl font-semibold"><span id="temp-val">--</span> <span class="text-lg">°C</span></p>
-                    </div>
-                    <div class="h-12 w-12 rounded-xl bg-red-100 text-red-500 grid place-items-center">
-                        <i class="fa-solid fa-temperature-half text-xl"></i>
-                    </div>
-                </div>
-            </article>
-
-            <article class="glass-card metric-card p-5">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm text-slate-500">ความชื้น</p>
-                        <p class="text-3xl font-semibold"><span id="hum-val">--</span> <span class="text-lg">%</span></p>
-                    </div>
-                    <div class="h-12 w-12 rounded-xl bg-sky-100 text-sky-500 grid place-items-center">
-                        <i class="fa-solid fa-droplet text-xl"></i>
-                    </div>
-                </div>
-            </article>
-
-            <article class="glass-card metric-card p-5 relative">
-                <div class="light-aura"></div>
-                <div class="flex items-center justify-between relative z-10">
-                    <div>
-                        <p class="text-sm text-slate-500">ความสว่าง</p>
-                        <p class="text-3xl font-semibold"><span id="light-val">--</span> <span class="text-lg">%</span></p>
-                        <p id="light-mood" class="text-xs font-medium text-amber-700 mt-1">กำลังประเมินสภาพแสง...</p>
-                    </div>
-                    <div class="h-12 w-12 rounded-xl bg-amber-100 text-amber-500 grid place-items-center">
-                        <i class="fa-solid fa-lightbulb text-xl"></i>
-                    </div>
-                </div>
-            </article>
         </section>
 
-        <section class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            <div class="xl:col-span-2 space-y-6">
-                <article class="glass-card p-6 fade-in-up" style="animation-delay: 0.16s;">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-xl font-semibold text-slate-800">
-                            <i class="fa-solid fa-chart-area text-amber-500 mr-2"></i>
-                            กราฟแสงแบบ Real-time
+        <section id="view-dashboard" class="hidden page-dashboard">
+            <div class="page-navbar">
+                <div class="navbar-left">
+                    <button data-nav-view="dashboard" class="nav-btn nav-btn-dashboard nav-active" id="nav-dashboard"><i class="fa-solid fa-chart-line mr-1"></i>Dashboard</button>
+                    <button data-nav-view="devices" class="nav-btn nav-btn-devices" id="nav-devices"><i class="fa-solid fa-sliders mr-1"></i>Devices</button>
+                </div>
+                <div class="navbar-right">
+                    <span id="auth-user-dashboard" class="auth-user-chip">-</span>
+                    <button data-lang-toggle type="button" class="nav-btn nav-btn-lang"><i class="fa-solid fa-globe mr-1"></i>TH | EN</button>
+                    <button data-logout type="button" class="nav-btn nav-btn-logout"><i class="fa-solid fa-right-from-bracket mr-1"></i>Logout</button>
+                </div>
+            </div>
+            <header class="glass-card p-6 md:p-8 mb-6">
+                <div class="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
+                    <div>
+                        <h1 class="hero-title text-3xl md:text-4xl font-semibold mb-2">
+                            <i class="fa-solid fa-sun text-amber-500 mr-2"></i>
+                            <span id="hero-title-text">Light Intelligence Dashboard</span>
+                        </h1>
+                        <p id="hero-subtitle" class="text-slate-600"></p>
+                        <div class="mt-3">
+                            <span class="sticker-pill"><i class="fa-solid fa-signal"></i><span id="pill-live">LIVE</span></span>
+                            <span class="sticker-pill"><i class="fa-solid fa-wand-magic-sparkles"></i><span id="pill-modern">MODERN</span></span>
+                            <span class="sticker-pill"><i class="fa-solid fa-shield-heart"></i><span id="pill-stable">STABLE</span></span>
+                        </div>
+                        <div class="theme-switcher" role="group" aria-label="Theme Switcher">
+                            <button id="theme-obsidian" class="theme-btn" type="button">Obsidian</button>
+                            <button id="theme-carbon" class="theme-btn" type="button">Carbon</button>
+                            <button id="theme-neon" class="theme-btn" type="button">Neon</button>
+                        </div>
+                        <div class="mode-switcher" role="group" aria-label="Mode Switcher">
+                            <button id="mode-dark" class="mode-btn" type="button">Dark</button>
+                            <button id="mode-light" class="mode-btn" type="button">Light</button>
+                            <button id="mode-contrast" class="mode-btn" type="button">High Contrast</button>
+                        </div>
+                        <div class="perf-grid">
+                            <div class="perf-chip">
+                                <span id="rx-rate-label">RX Rate</span>
+                                <span id="rx-rate" class="perf-value tx-live">-- /s</span>
+                            </div>
+                            <div class="perf-chip">
+                                <span id="tx-latency-label">TX Latency</span>
+                                <span id="tx-latency" class="perf-value">-- ms</span>
+                            </div>
+                            <div class="perf-chip">
+                                <span id="command-label">Command</span>
+                                <span id="tx-state" class="perf-value tx-live">READY</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="connection-status" class="status-badge bg-amber-100 text-amber-700 w-fit"></div>
+                </div>
+            </header>
+
+            <section class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+                <article class="glass-card metric-card p-5">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p id="metric-temp-label" class="text-sm text-slate-500">อุณหภูมิ</p>
+                            <p class="text-3xl font-semibold"><span id="temp-val">--</span> <span class="text-lg">°C</span></p>
+                        </div>
+                        <div class="h-12 w-12 rounded-xl bg-red-100 text-red-500 grid place-items-center">
+                            <i class="fa-solid fa-temperature-half text-xl"></i>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="glass-card metric-card p-5">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p id="metric-hum-label" class="text-sm text-slate-500">ความชื้น</p>
+                            <p class="text-3xl font-semibold"><span id="hum-val">--</span> <span class="text-lg">%</span></p>
+                        </div>
+                        <div class="h-12 w-12 rounded-xl bg-sky-100 text-sky-500 grid place-items-center">
+                            <i class="fa-solid fa-droplet text-xl"></i>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="glass-card metric-card p-5 relative">
+                    <div class="light-aura"></div>
+                    <div class="flex items-center justify-between relative z-10">
+                        <div>
+                            <p id="metric-light-label" class="text-sm text-slate-500">ความสว่าง</p>
+                            <p class="text-3xl font-semibold"><span id="light-val">--</span> <span class="text-lg">%</span></p>
+                            <p id="light-mood" class="text-xs font-medium text-amber-700 mt-1"></p>
+                        </div>
+                        <div class="h-12 w-12 rounded-xl bg-amber-100 text-amber-500 grid place-items-center">
+                            <i class="fa-solid fa-lightbulb text-xl"></i>
+                        </div>
+                    </div>
+                </article>
+            </section>
+
+            <section class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                <div class="xl:col-span-2 space-y-6">
+                    <article class="glass-card p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-xl font-semibold text-slate-800">
+                                <i class="fa-solid fa-chart-area text-amber-500 mr-2"></i>
+                                <span id="light-chart-title">กราฟแสงแบบ Real-time</span>
+                            </h2>
+                            <span id="light-trend-badge" class="text-xs bg-amber-100 text-amber-700 px-3 py-1 rounded-full">Light Trend</span>
+                        </div>
+                        <div class="relative h-72 w-full"><canvas id="lightChart"></canvas></div>
+                    </article>
+
+                    <article class="glass-card p-6">
+                        <h2 class="text-lg font-semibold mb-4 text-slate-800">
+                            <i class="fa-solid fa-chart-line text-cyan-600 mr-2"></i>
+                            <span id="env-chart-title">กราฟอุณหภูมิและความชื้น</span>
                         </h2>
-                        <span class="text-xs bg-amber-100 text-amber-700 px-3 py-1 rounded-full">Light Trend</span>
+                        <div class="relative h-64 w-full"><canvas id="envChart"></canvas></div>
+                    </article>
+                </div>
+
+                <aside class="glass-card p-6">
+                    <h2 class="text-xl font-semibold mb-5 text-slate-800">
+                        <i class="fa-solid fa-sliders text-emerald-600 mr-2"></i>
+                        <span id="control-panel-title">แผงควบคุมอุปกรณ์</span>
+                    </h2>
+
+                    <div class="space-y-4">
+                        <div id="relay1-wrapper" class="bg-white/70 rounded-xl p-4 border border-white/90 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <i class="fa-regular fa-lightbulb text-amber-500 text-xl"></i>
+                                <div>
+                                    <p id="relay1-title" class="font-medium text-slate-700">หลอดไฟ (Relay 1)</p>
+                                    <p id="relay1-subtitle" class="text-xs text-slate-500">ควบคุมไฟหลัก</p>
+                                </div>
+                            </div>
+                            <label class="switch"><input type="checkbox" id="toggle-relay1"><span class="slider"></span></label>
+                        </div>
+
+                        <div id="relay2-wrapper" class="bg-white/70 rounded-xl p-4 border border-white/90 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <i class="fa-solid fa-fan text-cyan-500 text-xl"></i>
+                                <div>
+                                    <p id="relay2-title" class="font-medium text-slate-700">พัดลม (Relay 2)</p>
+                                    <p id="relay2-subtitle" class="text-xs text-slate-500">ระบายอากาศอัตโนมัติ/แมนนวล</p>
+                                </div>
+                            </div>
+                            <label class="switch"><input type="checkbox" id="toggle-relay2"><span class="slider"></span></label>
+                        </div>
+
+                        <div class="bg-emerald-50 rounded-xl p-4 border border-emerald-100 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <i class="fa-solid fa-robot text-emerald-600 text-xl"></i>
+                                <div>
+                                    <p id="auto-title" class="font-medium text-emerald-800">โหมดอัตโนมัติ (Auto)</p>
+                                    <p id="auto-subtitle" class="text-xs text-emerald-700">ให้ระบบตัดสินใจจากค่าหน้างาน</p>
+                                </div>
+                            </div>
+                            <label class="switch"><input type="checkbox" id="toggle-auto"><span class="slider"></span></label>
+                        </div>
                     </div>
-                    <div class="relative h-72 w-full">
-                        <canvas id="lightChart"></canvas>
+
+                    <p id="manual-lock-note" class="manual-lock-note manual-lock-off"><i class="fa-solid fa-unlock mr-1"></i><span id="manual-lock-text"></span></p>
+
+                    <div class="magic-actions">
+                        <button id="all-off-btn" class="magic-btn" type="button"><i class="fa-solid fa-power-off mr-1"></i><span id="all-off-label"></span></button>
+                        <button id="sync-now-btn" class="magic-btn" type="button"><i class="fa-solid fa-bolt mr-1"></i><span id="sync-now-label"></span></button>
+                    </div>
+
+                    <div class="threshold-panel">
+                        <h4><i class="fa-solid fa-sliders mr-1"></i><span id="threshold-title"></span></h4>
+                        <select id="threshold-preset">
+                            <option id="preset-balanced" value="balanced">Balanced</option>
+                            <option id="preset-strict" value="strict">Strict</option>
+                            <option id="preset-relaxed" value="relaxed">Relaxed</option>
+                        </select>
+                        <div class="threshold-grid">
+                            <div class="threshold-field"><label id="th-label-temp-warn"></label><input id="th-temp-warn" type="number" step="0.1"></div>
+                            <div class="threshold-field"><label id="th-label-temp-danger"></label><input id="th-temp-danger" type="number" step="0.1"></div>
+                            <div class="threshold-field"><label id="th-label-hum-warn-low"></label><input id="th-hum-warn-low" type="number" step="0.1"></div>
+                            <div class="threshold-field"><label id="th-label-hum-warn-high"></label><input id="th-hum-warn-high" type="number" step="0.1"></div>
+                            <div class="threshold-field"><label id="th-label-hum-danger"></label><input id="th-hum-danger" type="number" step="0.1"></div>
+                            <div class="threshold-field"><label id="th-label-light-danger"></label><input id="th-light-danger" type="number" step="1"></div>
+                            <div class="threshold-field"><label id="th-label-light-warn-low"></label><input id="th-light-warn-low" type="number" step="1"></div>
+                            <div class="threshold-field"><label id="th-label-light-warn-high"></label><input id="th-light-warn-high" type="number" step="1"></div>
+                        </div>
+                        <div class="threshold-actions">
+                            <button id="apply-threshold-btn" class="threshold-btn" type="button"></button>
+                            <button id="reset-threshold-btn" class="threshold-btn" type="button"></button>
+                        </div>
+                    </div>
+
+                    <div class="mt-5 bg-slate-900 text-white rounded-xl p-4">
+                        <p id="sticker-title" class="text-sm font-medium mb-1"><i class="fa-solid fa-note-sticky text-amber-300 mr-2"></i></p>
+                        <p id="sticker-desc" class="text-xs text-slate-300"></p>
+                    </div>
+                </aside>
+            </section>
+
+            <section class="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-6">
+                <article class="glass-card p-6 xl:col-span-1">
+                    <h3 class="text-lg font-semibold mb-3 text-slate-800"><i class="fa-solid fa-traffic-light text-cyan-600 mr-2"></i><span id="latest-status-title"></span></h3>
+                    <div class="status-row"><span id="status-temp-label" class="text-sm text-slate-600"></span><span id="temp-status" class="status-chip status-info"><span class="status-dot dot-info"></span></span></div>
+                    <div class="status-row"><span id="status-hum-label" class="text-sm text-slate-600"></span><span id="hum-status" class="status-chip status-info"><span class="status-dot dot-info"></span></span></div>
+                    <div class="status-row"><span id="status-light-label" class="text-sm text-slate-600"></span><span id="light-status" class="status-chip status-info"><span class="status-dot dot-info"></span></span></div>
+                    <div class="status-row"><span id="status-db-label" class="text-sm text-slate-600"></span><span id="db-status-chip" class="status-chip status-warn"><span class="status-dot dot-warn"></span></span></div>
+                    <div class="status-row"><span id="status-board-label" class="text-sm text-slate-600"></span><span id="board-status-chip" class="status-chip status-warn"><span class="status-dot dot-warn"></span></span></div>
+                </article>
+
+                <article class="glass-card p-6 xl:col-span-2">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-semibold text-slate-800"><i class="fa-solid fa-clock-rotate-left text-amber-500 mr-2"></i><span id="logs-title"></span></h3>
+                        <div class="flex gap-2">
+                            <button id="export-logs-btn" class="text-xs px-3 py-1 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors"><span id="export-csv-label"></span></button>
+                            <button id="clear-logs-btn" class="text-xs px-3 py-1 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors"><span id="clear-log-label"></span></button>
+                        </div>
+                    </div>
+                    <div class="mini-summary">
+                        <div class="mini-item mini-warn"><span id="warn-today-label" class="mini-title"></span><span id="warn-daily-count" class="mini-value">0</span></div>
+                        <div class="mini-item mini-danger"><span id="danger-today-label" class="mini-title"></span><span id="danger-daily-count" class="mini-value">0</span></div>
+                    </div>
+                    <div id="log-list" class="log-list" aria-live="polite"></div>
+                </article>
+            </section>
+        </section>
+
+        <section id="view-devices" class="hidden page-devices">
+            <div class="page-navbar">
+                <div class="navbar-left">
+                    <button data-nav-view="dashboard" class="nav-btn nav-btn-dashboard" id="nav-dashboard-2"><i class="fa-solid fa-chart-line mr-1"></i>Dashboard</button>
+                    <button data-nav-view="devices" class="nav-btn nav-btn-devices nav-active" id="nav-devices-2"><i class="fa-solid fa-sliders mr-1"></i>Devices</button>
+                </div>
+                <div class="navbar-right">
+                    <span id="auth-user-devices" class="auth-user-chip">-</span>
+                    <button data-lang-toggle type="button" class="nav-btn nav-btn-lang"><i class="fa-solid fa-globe mr-1"></i>TH | EN</button>
+                    <button data-logout type="button" class="nav-btn nav-btn-logout"><i class="fa-solid fa-right-from-bracket mr-1"></i>Logout</button>
+                </div>
+            </div>
+            <header class="glass-card p-6 md:p-8 mb-6">
+                <div>
+                    <h1 id="devices-hero-title" class="hero-title text-3xl md:text-4xl font-semibold mb-2"><i class="fa-solid fa-sliders text-emerald-500 mr-2"></i>Device Control Center</h1>
+                    <p id="devices-hero-subtitle" class="text-slate-600">Manage windows, relays, fans, and custom IoT devices</p>
+                </div>
+            </header>
+
+            <section class="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-6">
+                <article class="glass-card p-6">
+                    <h3 id="window-section-title" class="text-lg font-semibold text-slate-800 mb-4"></h3>
+                    <div id="triple-window-grid" class="window-grid">
+                        <div class="window-card"><div class="window-head"><span id="window-1-label"></span><span id="window-1-value" class="window-value">0%</span></div><select id="window-1-mode" class="window-select"><option id="window-1-mode-auto" value="auto"></option><option id="window-1-mode-manual" value="manual"></option></select><input id="window-1-open" class="window-range" type="range" min="0" max="100" step="5" value="0"></div>
+                        <div class="window-card"><div class="window-head"><span id="window-2-label"></span><span id="window-2-value" class="window-value">0%</span></div><select id="window-2-mode" class="window-select"><option id="window-2-mode-auto" value="auto"></option><option id="window-2-mode-manual" value="manual"></option></select><input id="window-2-open" class="window-range" type="range" min="0" max="100" step="5" value="0"></div>
+                        <div class="window-card"><div class="window-head"><span id="window-3-label"></span><span id="window-3-value" class="window-value">0%</span></div><select id="window-3-mode" class="window-select"><option id="window-3-mode-auto" value="auto"></option><option id="window-3-mode-manual" value="manual"></option></select><input id="window-3-open" class="window-range" type="range" min="0" max="100" step="5" value="0"></div>
                     </div>
                 </article>
 
-                <article class="glass-card p-6 fade-in-up" style="animation-delay: 0.24s;">
-                    <h2 class="text-lg font-semibold mb-4 text-slate-800">
-                        <i class="fa-solid fa-chart-line text-cyan-600 mr-2"></i>
-                        กราฟอุณหภูมิและความชื้น
-                    </h2>
-                    <div class="relative h-64 w-full">
-                        <canvas id="envChart"></canvas>
+                <article class="glass-card p-6">
+                    <h3 id="custom-device-title" class="text-lg font-semibold text-slate-800 mb-4"></h3>
+                    <div class="device-add-grid">
+                        <input id="new-device-name" type="text" class="device-input">
+                        <select id="new-device-type" class="device-input">
+                            <option id="device-type-custom" value="custom"></option>
+                            <option id="device-type-light" value="light"></option>
+                            <option id="device-type-fan" value="fan"></option>
+                            <option id="device-type-pump" value="pump"></option>
+                            <option id="device-type-valve" value="valve"></option>
+                        </select>
+                        <button id="add-device-btn" type="button" class="magic-btn"></button>
+                    </div>
+                    <div id="extra-device-list" class="extra-device-list"></div>
+                </article>
+            </section>
+        </section>
+
+        <section id="view-unauthorized" class="unauthorized-page hidden">
+            <div class="max-w-4xl mx-auto unauthorized-wrap">
+                <article class="glass-card p-8 unauthorized-card fade-in-up">
+                    <div class="unauthorized-orb"></div>
+                    <div class="page-actions mb-4">
+                        <button data-lang-toggle type="button" class="page-btn">TH | EN</button>
+                        <button data-nav-view="dashboard" class="page-btn" id="back-dashboard-top"></button>
+                        <button data-nav-view="login" class="page-btn" id="login-other-top"></button>
+                    </div>
+                    <div class="unauthorized-header">
+                        <span class="unauthorized-icon"><i class="fa-solid fa-shield-halved"></i></span>
+                        <h1 id="unauthorized-title" class="text-3xl md:text-4xl font-semibold"></h1>
+                        <p id="unauthorized-subtitle" class="text-slate-300 mt-2"></p>
+                    </div>
+                    <div class="unauthorized-panel mt-6">
+                        <p id="unauthorized-desc" class="text-sm md:text-base text-slate-300"></p>
+                        <p id="unauthorized-reason" class="unauthorized-reason mt-3"></p>
+                    </div>
+                    <div class="unauthorized-actions mt-6">
+                        <button data-nav-view="dashboard" class="magic-btn"><i class="fa-solid fa-gauge mr-1"></i><span id="back-dashboard-btn-text"></span></button>
+                        <button data-nav-view="login" class="magic-btn"><i class="fa-solid fa-right-from-bracket mr-1"></i><span id="login-other-btn-text"></span></button>
                     </div>
                 </article>
             </div>
-
-            <aside class="glass-card p-6 fade-in-up" style="animation-delay: 0.28s;">
-                <h2 class="text-xl font-semibold mb-5 text-slate-800">
-                    <i class="fa-solid fa-sliders text-emerald-600 mr-2"></i>
-                    แผงควบคุมอุปกรณ์
-                </h2>
-
-                <div class="space-y-4">
-                    <div id="relay1-wrapper" class="bg-white/70 rounded-xl p-4 border border-white/90 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <i class="fa-regular fa-lightbulb text-amber-500 text-xl"></i>
-                            <div>
-                                <p class="font-medium text-slate-700">หลอดไฟ (Relay 1)</p>
-                                <p class="text-xs text-slate-500">ควบคุมไฟหลัก</p>
-                            </div>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" id="toggle-relay1">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-                    <div id="relay2-wrapper" class="bg-white/70 rounded-xl p-4 border border-white/90 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-fan text-cyan-500 text-xl"></i>
-                            <div>
-                                <p class="font-medium text-slate-700">พัดลม (Relay 2)</p>
-                                <p class="text-xs text-slate-500">ระบายอากาศอัตโนมัติ/แมนนวล</p>
-                            </div>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" id="toggle-relay2">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-
-                    <div class="bg-emerald-50 rounded-xl p-4 border border-emerald-100 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <i class="fa-solid fa-robot text-emerald-600 text-xl"></i>
-                            <div>
-                                <p class="font-medium text-emerald-800">โหมดอัตโนมัติ (Auto)</p>
-                                <p class="text-xs text-emerald-700">ให้ระบบตัดสินใจจากค่าหน้างาน</p>
-                            </div>
-                        </div>
-                        <label class="switch">
-                            <input type="checkbox" id="toggle-auto">
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
-
-                <p id="manual-lock-note" class="manual-lock-note manual-lock-off">
-                    <i class="fa-solid fa-unlock mr-1"></i>
-                    Manual พร้อมใช้งาน: ตอนนี้ควบคุม Relay 1/2 ได้ตามปกติ
-                </p>
-
-                <div class="magic-actions">
-                    <button id="all-off-btn" class="magic-btn" type="button"><i class="fa-solid fa-power-off mr-1"></i>ปิดอุปกรณ์ทั้งหมด</button>
-                    <button id="sync-now-btn" class="magic-btn" type="button"><i class="fa-solid fa-bolt mr-1"></i>Sync ทันที</button>
-                </div>
-
-                <div class="threshold-panel">
-                    <h4><i class="fa-solid fa-sliders mr-1"></i>Threshold Preset (ปรับจาก UI)</h4>
-                    <select id="threshold-preset">
-                        <option value="balanced">Balanced</option>
-                        <option value="strict">Strict</option>
-                        <option value="relaxed">Relaxed</option>
-                    </select>
-                    <div class="threshold-grid">
-                        <div class="threshold-field">
-                            <label>Temp Warn >=</label>
-                            <input id="th-temp-warn" type="number" step="0.1">
-                        </div>
-                        <div class="threshold-field">
-                            <label>Temp Danger >=</label>
-                            <input id="th-temp-danger" type="number" step="0.1">
-                        </div>
-                        <div class="threshold-field">
-                            <label>Humidity Warn ต่ำกว่า</label>
-                            <input id="th-hum-warn-low" type="number" step="0.1">
-                        </div>
-                        <div class="threshold-field">
-                            <label>Humidity Warn สูงกว่า</label>
-                            <input id="th-hum-warn-high" type="number" step="0.1">
-                        </div>
-                        <div class="threshold-field">
-                            <label>Humidity Danger >=</label>
-                            <input id="th-hum-danger" type="number" step="0.1">
-                        </div>
-                        <div class="threshold-field">
-                            <label>Light Danger &lt;</label>
-                            <input id="th-light-danger" type="number" step="1">
-                        </div>
-                        <div class="threshold-field">
-                            <label>Light Warn ต่ำกว่า</label>
-                            <input id="th-light-warn-low" type="number" step="1">
-                        </div>
-                        <div class="threshold-field">
-                            <label>Light Warn สูงกว่า</label>
-                            <input id="th-light-warn-high" type="number" step="1">
-                        </div>
-                    </div>
-                    <div class="threshold-actions">
-                        <button id="apply-threshold-btn" class="threshold-btn" type="button">Apply Threshold</button>
-                        <button id="reset-threshold-btn" class="threshold-btn" type="button">Reset</button>
-                    </div>
-                </div>
-
-                <div class="mt-5 bg-slate-900 text-white rounded-xl p-4">
-                    <p class="text-sm font-medium mb-1"><i class="fa-solid fa-note-sticky text-amber-300 mr-2"></i>Sticker Notes</p>
-                    <p class="text-xs text-slate-300">เมื่อเปิด Auto ระบบจะล็อกการสั่งงานแบบแมนนวลทั้ง Relay 1 และ Relay 2</p>
-                </div>
-            </aside>
-        </section>
-
-        <section class="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-6 fade-in-up" style="animation-delay: 0.36s;">
-            <article class="glass-card p-6 xl:col-span-1">
-                <h3 class="text-lg font-semibold mb-3 text-slate-800">
-                    <i class="fa-solid fa-traffic-light text-cyan-600 mr-2"></i>
-                    สถานะล่าสุด (แยกสี)
-                </h3>
-
-                <div class="status-row">
-                    <span class="text-sm text-slate-600">อุณหภูมิ</span>
-                    <span id="temp-status" class="status-chip status-info"><span class="status-dot dot-info"></span>รอข้อมูล</span>
-                </div>
-
-                <div class="status-row">
-                    <span class="text-sm text-slate-600">ความชื้น</span>
-                    <span id="hum-status" class="status-chip status-info"><span class="status-dot dot-info"></span>รอข้อมูล</span>
-                </div>
-
-                <div class="status-row">
-                    <span class="text-sm text-slate-600">ความสว่าง</span>
-                    <span id="light-status" class="status-chip status-info"><span class="status-dot dot-info"></span>รอข้อมูล</span>
-                </div>
-
-                <div class="status-row">
-                    <span class="text-sm text-slate-600">การเชื่อมต่อ</span>
-                    <span id="conn-status-chip" class="status-chip status-warn"><span class="status-dot dot-warn"></span>กำลังเชื่อมต่อ</span>
-                </div>
-            </article>
-
-            <article class="glass-card p-6 xl:col-span-2">
-                <div class="flex items-center justify-between mb-3">
-                    <h3 class="text-lg font-semibold text-slate-800">
-                        <i class="fa-solid fa-clock-rotate-left text-amber-500 mr-2"></i>
-                        Log ย้อนหลัง
-                    </h3>
-                    <div class="flex gap-2">
-                        <button id="export-logs-btn" class="text-xs px-3 py-1 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">
-                            Export CSV
-                        </button>
-                        <button id="clear-logs-btn" class="text-xs px-3 py-1 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors">
-                            ล้าง Log
-                        </button>
-                    </div>
-                </div>
-                <div class="mini-summary">
-                    <div class="mini-item mini-warn">
-                        <span class="mini-title">Warn วันนี้</span>
-                        <span id="warn-daily-count" class="mini-value">0</span>
-                    </div>
-                    <div class="mini-item mini-danger">
-                        <span class="mini-title">Danger วันนี้</span>
-                        <span id="danger-daily-count" class="mini-value">0</span>
-                    </div>
-                </div>
-                <div id="log-list" class="log-list" aria-live="polite"></div>
-            </article>
         </section>
     </main>
 
-    <script type="module">
-        // Import Firebase จาก CDN
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-
-        // ตั้งค่า Firebase (จากที่คุณส่งมาให้)
-        const firebaseConfig = {
-            apiKey: "AIzaSyCW5d9qiv1_E2RBa-g0-EV5yfQ8uE-uIn8",
-            authDomain: "iot-projectict.firebaseapp.com",
-            // ต้องเพิ่ม https:// หน้า URL ในเว็บ (แต่ใน ESP32 ไม่ต้อง)
-            databaseURL: "https://iot-projectict-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "iot-projectict",
-            storageBucket: "iot-projectict.firebasestorage.app",
-            messagingSenderId: "627989546169",
-            appId: "1:627989546169:web:19584f8b60fc2f81bc8768",
-            measurementId: "G-CS1WEQ9K1Z"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        // ตัวแปรสำหรับ DOM Elements
-        const tempEl = document.getElementById('temp-val');
-        const humEl = document.getElementById('hum-val');
-        const lightEl = document.getElementById('light-val');
-        const lightMoodEl = document.getElementById('light-mood');
-        const tempStatusEl = document.getElementById('temp-status');
-        const humStatusEl = document.getElementById('hum-status');
-        const lightStatusEl = document.getElementById('light-status');
-        const connStatusChipEl = document.getElementById('conn-status-chip');
-        const toggleRelay1 = document.getElementById('toggle-relay1');
-        const toggleRelay2 = document.getElementById('toggle-relay2');
-        const toggleAuto = document.getElementById('toggle-auto');
-        const relay1Wrapper = document.getElementById('relay1-wrapper');
-        const relay2Wrapper = document.getElementById('relay2-wrapper');
-        const statusEl = document.getElementById('connection-status');
-        const manualLockNoteEl = document.getElementById('manual-lock-note');
-        const themeObsidianBtn = document.getElementById('theme-obsidian');
-        const themeCarbonBtn = document.getElementById('theme-carbon');
-        const themeNeonBtn = document.getElementById('theme-neon');
-        const modeDarkBtn = document.getElementById('mode-dark');
-        const modeLightBtn = document.getElementById('mode-light');
-        const thresholdPresetEl = document.getElementById('threshold-preset');
-        const thTempWarnEl = document.getElementById('th-temp-warn');
-        const thTempDangerEl = document.getElementById('th-temp-danger');
-        const thHumWarnLowEl = document.getElementById('th-hum-warn-low');
-        const thHumWarnHighEl = document.getElementById('th-hum-warn-high');
-        const thHumDangerEl = document.getElementById('th-hum-danger');
-        const thLightDangerEl = document.getElementById('th-light-danger');
-        const thLightWarnLowEl = document.getElementById('th-light-warn-low');
-        const thLightWarnHighEl = document.getElementById('th-light-warn-high');
-        const applyThresholdBtn = document.getElementById('apply-threshold-btn');
-        const resetThresholdBtn = document.getElementById('reset-threshold-btn');
-        const rxRateEl = document.getElementById('rx-rate');
-        const txLatencyEl = document.getElementById('tx-latency');
-        const txStateEl = document.getElementById('tx-state');
-        const toastWrapEl = document.getElementById('toast-wrap');
-        const logListEl = document.getElementById('log-list');
-        const exportLogsBtn = document.getElementById('export-logs-btn');
-        const clearLogsBtn = document.getElementById('clear-logs-btn');
-        const allOffBtn = document.getElementById('all-off-btn');
-        const syncNowBtn = document.getElementById('sync-now-btn');
-        const warnDailyCountEl = document.getElementById('warn-daily-count');
-        const dangerDailyCountEl = document.getElementById('danger-daily-count');
-
-        const bodyEl = document.body;
-
-        const maxDataPoints = 24;
-        const maxLogItems = 40;
-        const lastLevelState = {
-            temp: null,
-            hum: null,
-            light: null,
-            connection: 'warn'
-        };
-        let isManualLockedByAuto = null;
-        let pendingPatch = {};
-        let patchTimer = null;
-        let pendingChartSample = null;
-        let chartFrameId = null;
-        let lastSnapshotAt = 0;
-        const logStorageKey = 'iot_dashboard_logs_v2';
-        const themeStorageKey = 'iot_dashboard_theme_v1';
-        const modeStorageKey = 'iot_dashboard_mode_v1';
-        const thresholdStorageKey = 'iot_dashboard_threshold_v1';
-        let lastRendered = {
-            temp: '--',
-            hum: '--',
-            light: '--',
-            relay1: null,
-            relay2: null,
-            autoMode: null
-        };
-
-        const persistedLogs = [];
-    let activeThreshold = null;
-
-        function setTxState(state, text) {
-            txStateEl.className = `perf-value ${state}`;
-            txStateEl.textContent = text;
-        }
-
-        setTxState('tx-live', 'READY');
-
-        function getThresholdPresetConfig(presetName) {
-            const presets = {
-                balanced: {
-                    preset: 'balanced',
-                    tempWarn: 30,
-                    tempDanger: 35,
-                    humWarnLow: 35,
-                    humWarnHigh: 70,
-                    humDanger: 80,
-                    lightDanger: 25,
-                    lightWarnLow: 45,
-                    lightWarnHigh: 90
-                },
-                strict: {
-                    preset: 'strict',
-                    tempWarn: 28,
-                    tempDanger: 32,
-                    humWarnLow: 40,
-                    humWarnHigh: 65,
-                    humDanger: 75,
-                    lightDanger: 35,
-                    lightWarnLow: 55,
-                    lightWarnHigh: 85
-                },
-                relaxed: {
-                    preset: 'relaxed',
-                    tempWarn: 32,
-                    tempDanger: 38,
-                    humWarnLow: 30,
-                    humWarnHigh: 75,
-                    humDanger: 85,
-                    lightDanger: 18,
-                    lightWarnLow: 35,
-                    lightWarnHigh: 95
-                }
-            };
-
-            return presets[presetName] ? { ...presets[presetName] } : { ...presets.balanced };
-        }
-
-        function writeThresholdInputs(config) {
-            thresholdPresetEl.value = config.preset;
-            thTempWarnEl.value = config.tempWarn;
-            thTempDangerEl.value = config.tempDanger;
-            thHumWarnLowEl.value = config.humWarnLow;
-            thHumWarnHighEl.value = config.humWarnHigh;
-            thHumDangerEl.value = config.humDanger;
-            thLightDangerEl.value = config.lightDanger;
-            thLightWarnLowEl.value = config.lightWarnLow;
-            thLightWarnHighEl.value = config.lightWarnHigh;
-        }
-
-        function readThresholdInputs() {
-            return {
-                preset: thresholdPresetEl.value,
-                tempWarn: Number(thTempWarnEl.value),
-                tempDanger: Number(thTempDangerEl.value),
-                humWarnLow: Number(thHumWarnLowEl.value),
-                humWarnHigh: Number(thHumWarnHighEl.value),
-                humDanger: Number(thHumDangerEl.value),
-                lightDanger: Number(thLightDangerEl.value),
-                lightWarnLow: Number(thLightWarnLowEl.value),
-                lightWarnHigh: Number(thLightWarnHighEl.value)
-            };
-        }
-
-        function normalizeThreshold(config) {
-            const safe = { ...config };
-            if (!Number.isFinite(safe.tempWarn)) safe.tempWarn = 30;
-            if (!Number.isFinite(safe.tempDanger)) safe.tempDanger = 35;
-            if (!Number.isFinite(safe.humWarnLow)) safe.humWarnLow = 35;
-            if (!Number.isFinite(safe.humWarnHigh)) safe.humWarnHigh = 70;
-            if (!Number.isFinite(safe.humDanger)) safe.humDanger = 80;
-            if (!Number.isFinite(safe.lightDanger)) safe.lightDanger = 25;
-            if (!Number.isFinite(safe.lightWarnLow)) safe.lightWarnLow = 45;
-            if (!Number.isFinite(safe.lightWarnHigh)) safe.lightWarnHigh = 90;
-
-            if (safe.tempDanger <= safe.tempWarn) safe.tempDanger = safe.tempWarn + 1;
-            if (safe.humWarnHigh <= safe.humWarnLow) safe.humWarnHigh = safe.humWarnLow + 1;
-            if (safe.humDanger <= safe.humWarnHigh) safe.humDanger = safe.humWarnHigh + 1;
-            if (safe.lightWarnLow <= safe.lightDanger) safe.lightWarnLow = safe.lightDanger + 1;
-            if (safe.lightWarnHigh <= safe.lightWarnLow) safe.lightWarnHigh = safe.lightWarnLow + 1;
-            return safe;
-        }
-
-        function applyThresholdConfig(config, shouldPersist = true) {
-            activeThreshold = normalizeThreshold(config);
-            writeThresholdInputs(activeThreshold);
-
-            if (shouldPersist) {
-                localStorage.setItem(thresholdStorageKey, JSON.stringify(activeThreshold));
-                addLog(`อัปเดต Threshold เป็น preset: ${activeThreshold.preset}`, 'info');
-                showToast(`ใช้ Threshold: ${activeThreshold.preset.toUpperCase()}`, 'info');
-            }
-        }
-
-        function loadThresholdConfig() {
-            const raw = localStorage.getItem(thresholdStorageKey);
-            if (!raw) {
-                applyThresholdConfig(getThresholdPresetConfig('balanced'), false);
-                return;
-            }
-
-            try {
-                const parsed = JSON.parse(raw);
-                applyThresholdConfig(parsed, false);
-            } catch (error) {
-                console.error(error);
-                applyThresholdConfig(getThresholdPresetConfig('balanced'), false);
-            }
-        }
-
-        function setMode(modeName) {
-            const mode = modeName === 'light' ? 'light' : 'dark';
-            document.body.classList.remove('mode-dark', 'mode-light');
-            document.body.classList.add(`mode-${mode}`);
-
-            modeDarkBtn.classList.toggle('active', mode === 'dark');
-            modeLightBtn.classList.toggle('active', mode === 'light');
-
-            localStorage.setItem(modeStorageKey, mode);
-        }
-
-        function loadMode() {
-            const saved = localStorage.getItem(modeStorageKey);
-            setMode(saved === 'light' ? 'light' : 'dark');
-        }
-
-        function setTheme(themeName) {
-            document.body.classList.remove('theme-obsidian', 'theme-carbon', 'theme-neon');
-            document.body.classList.add(`theme-${themeName}`);
-
-            themeObsidianBtn.classList.toggle('active', themeName === 'obsidian');
-            themeCarbonBtn.classList.toggle('active', themeName === 'carbon');
-            themeNeonBtn.classList.toggle('active', themeName === 'neon');
-
-            localStorage.setItem(themeStorageKey, themeName);
-            addLog(`เปลี่ยนธีมเป็น ${themeName.toUpperCase()}`, 'info', false);
-        }
-
-        function loadTheme() {
-            const saved = localStorage.getItem(themeStorageKey);
-            const allowed = ['obsidian', 'carbon', 'neon'];
-            const theme = allowed.includes(saved) ? saved : 'obsidian';
-            setTheme(theme);
-        }
-
-        function toNumberOrNull(value) {
-            if (value === undefined || value === null || value === '') return null;
-            const n = Number(value);
-            return Number.isNaN(n) ? null : n;
-        }
-
-        // การตั้งค่ากราฟแสง (Light)
-        const lightCtx = document.getElementById('lightChart').getContext('2d');
-        const lightGradient = lightCtx.createLinearGradient(0, 0, 0, 240);
-        lightGradient.addColorStop(0, 'rgba(255, 170, 0, 0.55)');
-        lightGradient.addColorStop(1, 'rgba(255, 170, 0, 0.05)');
-
-        const lightChart = new Chart(lightCtx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [
-                    {
-                        label: 'ความสว่าง (%)',
-                        borderColor: '#f59e0b',
-                        backgroundColor: lightGradient,
-                        data: [],
-                        tension: 0.35,
-                        fill: true,
-                        borderWidth: 3,
-                        pointRadius: 0,
-                        pointHoverRadius: 5
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: { grid: { color: 'rgba(80, 110, 120, 0.12)' } },
-                    y: {
-                        beginAtZero: true,
-                        suggestedMax: 100,
-                        grid: { color: 'rgba(80, 110, 120, 0.12)' }
-                    }
-                },
-                animation: { duration: 350 }
-            }
-        });
-
-        // การตั้งค่ากราฟอุณหภูมิและความชื้น
-        const envCtx = document.getElementById('envChart').getContext('2d');
-        const envChart = new Chart(envCtx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [
-                    {
-                        label: 'อุณหภูมิ (°C)',
-                        borderColor: '#ef4444',
-                        backgroundColor: 'rgba(239, 68, 68, 0.12)',
-                        data: [],
-                        tension: 0.33,
-                        borderWidth: 2,
-                        pointRadius: 0
-                    },
-                    {
-                        label: 'ความชื้น (%)',
-                        borderColor: '#06b6d4',
-                        backgroundColor: 'rgba(6, 182, 212, 0.12)',
-                        data: [],
-                        tension: 0.33,
-                        borderWidth: 2,
-                        pointRadius: 0
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: { grid: { color: 'rgba(80, 110, 120, 0.10)' } },
-                    y: { grid: { color: 'rgba(80, 110, 120, 0.10)' } }
-                },
-                animation: { duration: 350 }
-            }
-        });
-
-        function getTimeString() {
-            const now = new Date();
-            return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
-        }
-
-        function pushChartPoint(chart, values, label) {
-            if (chart.data.labels.length >= maxDataPoints) {
-                chart.data.labels.shift();
-                chart.data.datasets.forEach((dataset) => dataset.data.shift());
-            }
-
-            chart.data.labels.push(label);
-            values.forEach((value, index) => {
-                chart.data.datasets[index].data.push(value);
-            });
-
-            chart.update();
-        }
-
-        function scheduleChartUpdate(light, temp, hum, timeLabel) {
-            pendingChartSample = { light, temp, hum, timeLabel };
-            if (chartFrameId !== null) return;
-
-            chartFrameId = window.requestAnimationFrame(() => {
-                chartFrameId = null;
-                if (!pendingChartSample) return;
-
-                pushChartPoint(lightChart, [pendingChartSample.light], pendingChartSample.timeLabel);
-                pushChartPoint(envChart, [pendingChartSample.temp, pendingChartSample.hum], pendingChartSample.timeLabel);
-                pendingChartSample = null;
-            });
-        }
-
-        function updateLightMood(lightPercent) {
-            if (lightPercent === null) {
-                lightMoodEl.textContent = 'กำลังประเมินสภาพแสง...';
-                bodyEl.style.setProperty('--light-glow', '0.18');
-                return;
-            }
-
-            if (lightPercent >= 80) {
-                lightMoodEl.textContent = 'สว่างมาก เหมาะกับพื้นที่ทำงาน';
-                bodyEl.style.setProperty('--light-glow', '0.6');
-            } else if (lightPercent >= 45) {
-                lightMoodEl.textContent = 'สว่างกำลังดี โหมดสบายตา';
-                bodyEl.style.setProperty('--light-glow', '0.4');
-            } else {
-                lightMoodEl.textContent = 'แสงค่อนข้างต่ำ แนะนำเปิดไฟเพิ่ม';
-                bodyEl.style.setProperty('--light-glow', '0.24');
-            }
-        }
-
-        function getLevelMeta(level) {
-            if (level === 'good') return { label: 'ปกติ', chip: 'status-good', dot: 'dot-good', log: 'log-good', toast: 'toast-good' };
-            if (level === 'warn') return { label: 'เฝ้าระวัง', chip: 'status-warn', dot: 'dot-warn', log: 'log-warn', toast: 'toast-warn' };
-            if (level === 'danger') return { label: 'วิกฤต', chip: 'status-danger', dot: 'dot-danger', log: 'log-danger', toast: 'toast-danger' };
-            return { label: 'ข้อมูล', chip: 'status-info', dot: 'dot-info', log: 'log-info', toast: 'toast-info' };
-        }
-
-        function classifyTemp(temp) {
-            if (temp === null) return { level: 'info', text: 'รอข้อมูล' };
-            if (temp >= activeThreshold.tempDanger) return { level: 'danger', text: `ร้อนจัด ${temp.toFixed(1)}°C` };
-            if (temp >= activeThreshold.tempWarn) return { level: 'warn', text: `เริ่มร้อน ${temp.toFixed(1)}°C` };
-            if (temp < 20) return { level: 'info', text: `ค่อนข้างเย็น ${temp.toFixed(1)}°C` };
-            return { level: 'good', text: `ปกติ ${temp.toFixed(1)}°C` };
-        }
-
-        function classifyHum(hum) {
-            if (hum === null) return { level: 'info', text: 'รอข้อมูล' };
-            if (hum >= activeThreshold.humDanger) return { level: 'danger', text: `ชื้นมาก ${hum.toFixed(1)}%` };
-            if (hum >= activeThreshold.humWarnHigh || hum < activeThreshold.humWarnLow) return { level: 'warn', text: `ต้องเฝ้าระวัง ${hum.toFixed(1)}%` };
-            return { level: 'good', text: `ปกติ ${hum.toFixed(1)}%` };
-        }
-
-        function classifyLight(light) {
-            if (light === null) return { level: 'info', text: 'รอข้อมูล' };
-            if (light < activeThreshold.lightDanger) return { level: 'danger', text: `มืดมาก ${light.toFixed(0)}%` };
-            if (light < activeThreshold.lightWarnLow || light > activeThreshold.lightWarnHigh) return { level: 'warn', text: `ค่าผันผวน ${light.toFixed(0)}%` };
-            return { level: 'good', text: `ปกติ ${light.toFixed(0)}%` };
-        }
-
-        function getSensorChipClass(sensorKey, level) {
-            if (sensorKey === 'temp' && level === 'warn') return 'chip-temp-warn';
-            if (sensorKey === 'temp' && level === 'danger') return 'chip-temp-danger';
-            if (sensorKey === 'hum' && level === 'warn') return 'chip-hum-warn';
-            if (sensorKey === 'hum' && level === 'danger') return 'chip-hum-danger';
-            if (sensorKey === 'light' && level === 'warn') return 'chip-light-warn';
-            if (sensorKey === 'light' && level === 'danger') return 'chip-light-danger';
-            return '';
-        }
-
-        function getSensorToastClass(sensorKey, level) {
-            if (sensorKey === 'temp' && level === 'warn') return 'toast-temp-warn';
-            if (sensorKey === 'temp' && level === 'danger') return 'toast-temp-danger';
-            if (sensorKey === 'hum' && level === 'warn') return 'toast-hum-warn';
-            if (sensorKey === 'hum' && level === 'danger') return 'toast-hum-danger';
-            if (sensorKey === 'light' && level === 'warn') return 'toast-light-warn';
-            if (sensorKey === 'light' && level === 'danger') return 'toast-light-danger';
-            return '';
-        }
-
-        function setStatusChip(el, result, sensorKey = '') {
-            const meta = getLevelMeta(result.level);
-            const sensorChipClass = getSensorChipClass(sensorKey, result.level);
-            el.className = `status-chip ${meta.chip} ${sensorChipClass}`;
-            el.innerHTML = `<span class="status-dot ${meta.dot}"></span>${result.text}`;
-        }
-
-        function makeTimeStamp() {
-            const now = new Date();
-            const date = now.toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit' });
-            const time = now.toLocaleTimeString('th-TH', { hour12: false });
-            return `${date} ${time}`;
-        }
-
-        function persistLogs() {
-            localStorage.setItem(logStorageKey, JSON.stringify(persistedLogs));
-        }
-
-        function getTodayPrefix() {
-            return new Date().toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit' });
-        }
-
-        function refreshDailySummary() {
-            const todayPrefix = getTodayPrefix();
-            let warnCount = 0;
-            let dangerCount = 0;
-
-            persistedLogs.forEach((entry) => {
-                if (!entry.time.startsWith(todayPrefix)) return;
-                if (entry.level === 'warn') warnCount += 1;
-                if (entry.level === 'danger') dangerCount += 1;
-            });
-
-            warnDailyCountEl.textContent = String(warnCount);
-            dangerDailyCountEl.textContent = String(dangerCount);
-        }
-
-        function renderLogItem(entry) {
-            const meta = getLevelMeta(entry.level);
-            const item = document.createElement('div');
-            item.className = `log-item ${meta.log}`;
-            item.innerHTML = `${entry.message}<span class="log-time">${entry.time}</span>`;
-            return item;
-        }
-
-        function loadPersistedLogs() {
-            const raw = localStorage.getItem(logStorageKey);
-            if (!raw) return;
-
-            try {
-                const parsed = JSON.parse(raw);
-                if (!Array.isArray(parsed)) return;
-
-                parsed.forEach((entry) => {
-                    if (!entry || typeof entry.message !== 'string' || typeof entry.level !== 'string' || typeof entry.time !== 'string') {
-                        return;
-                    }
-                    persistedLogs.push(entry);
-                });
-
-                const reversed = [...persistedLogs].reverse();
-                reversed.forEach((entry) => {
-                    logListEl.appendChild(renderLogItem(entry));
-                });
-                refreshDailySummary();
-            } catch (error) {
-                console.error(error);
-            }
-        }
-
-        function addLog(message, level = 'info', save = true) {
-            const meta = getLevelMeta(level);
-            const entry = {
-                message,
-                level,
-                time: makeTimeStamp()
-            };
-
-            const item = renderLogItem(entry);
-            logListEl.prepend(item);
-
-            if (save) {
-                persistedLogs.push(entry);
-                while (persistedLogs.length > maxLogItems) {
-                    persistedLogs.shift();
-                }
-                persistLogs();
-                refreshDailySummary();
-            }
-
-            while (logListEl.children.length > maxLogItems) {
-                logListEl.removeChild(logListEl.lastChild);
-            }
-        }
-
-        function showToast(message, level = 'info', customClass = '') {
-            const meta = getLevelMeta(level);
-            const toast = document.createElement('div');
-            toast.className = `toast ${meta.toast} ${customClass}`;
-            toast.textContent = message;
-            toastWrapEl.appendChild(toast);
-
-            window.setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(18px)';
-                toast.style.transition = 'all 0.28s ease';
-                window.setTimeout(() => toast.remove(), 280);
-            }, 3200);
-        }
-
-        function exportLogsToCsv() {
-            if (!persistedLogs.length) {
-                showToast('ไม่มี Log สำหรับ Export', 'warn');
-                return;
-            }
-
-            const escapeCsv = (value) => {
-                const str = String(value ?? '');
-                if (str.includes(',') || str.includes('"') || str.includes('\n')) {
-                    return `"${str.replace(/"/g, '""')}"`;
-                }
-                return str;
-            };
-
-            const rows = ['time,level,message'];
-            persistedLogs.forEach((entry) => {
-                rows.push([escapeCsv(entry.time), escapeCsv(entry.level), escapeCsv(entry.message)].join(','));
-            });
-
-            const blob = new Blob([rows.join('\n')], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `iot-logs-${new Date().toISOString().slice(0, 10)}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            URL.revokeObjectURL(url);
-
-            showToast('Export Log เป็น CSV สำเร็จ', 'good');
-            addLog('ส่งออก Log เป็น CSV', 'info');
-        }
-
-        function pushStatusIfChanged(sensorKey, result, label) {
-            if (lastLevelState[sensorKey] !== result.level) {
-                const meta = getLevelMeta(result.level);
-                const notifyText = `${label}: ${result.text}`;
-                const sensorToastClass = getSensorToastClass(sensorKey, result.level);
-                showToast(notifyText, result.level, sensorToastClass);
-                addLog(notifyText, result.level);
-                lastLevelState[sensorKey] = result.level;
-
-                if (result.level === 'danger') {
-                    showToast(`แจ้งเตือนด่วน ${label} อยู่ในช่วงวิกฤต`, 'danger', sensorToastClass);
-                } else if (result.level === 'good' && meta.label === 'ปกติ') {
-                    addLog(`${label} กลับสู่ค่าปกติแล้ว`, 'good');
-                }
-            }
-        }
-
-        function setConnectedStatus() {
-            statusEl.innerHTML = '<i class="fa-solid fa-circle-check mr-2"></i>เชื่อมต่อออนไลน์แล้ว';
-            statusEl.className = 'status-badge bg-emerald-100 text-emerald-700 w-fit';
-
-            if (lastLevelState.connection !== 'good') {
-                connStatusChipEl.className = 'status-chip status-good';
-                connStatusChipEl.innerHTML = '<span class="status-dot dot-good"></span>ออนไลน์';
-                addLog('เชื่อมต่อ Firebase สำเร็จ', 'good');
-                showToast('เชื่อมต่อ Firebase สำเร็จ', 'good');
-                lastLevelState.connection = 'good';
-            }
-        }
-
-        function setErrorStatus(message) {
-            statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-2"></i>${message}`;
-            statusEl.className = 'status-badge bg-rose-100 text-rose-700 w-fit';
-
-            connStatusChipEl.className = 'status-chip status-danger';
-            connStatusChipEl.innerHTML = '<span class="status-dot dot-danger"></span>ออฟไลน์';
-            if (lastLevelState.connection !== 'danger') {
-                addLog(`การเชื่อมต่อผิดพลาด: ${message}`, 'danger');
-                showToast(`การเชื่อมต่อผิดพลาด: ${message}`, 'danger');
-                lastLevelState.connection = 'danger';
-            }
-
-            setTxState('tx-fail', 'OFFLINE');
-        }
-
-        function setManualLockState(autoMode) {
-            toggleRelay1.disabled = autoMode;
-            toggleRelay2.disabled = autoMode;
-
-            if (autoMode) {
-                relay1Wrapper.classList.add('opacity-70');
-                relay2Wrapper.classList.add('opacity-70');
-            } else {
-                relay1Wrapper.classList.remove('opacity-70');
-                relay2Wrapper.classList.remove('opacity-70');
-            }
-
-            if (isManualLockedByAuto !== autoMode) {
-                if (autoMode) {
-                    addLog('เปิด Auto แล้ว: ล็อกระบบแมนนวลทั้ง Relay 1 และ Relay 2', 'warn');
-                    showToast('Auto ทำงาน: ล็อกระบบแมนนวลแล้ว', 'warn');
-                } else {
-                    addLog('ปิด Auto แล้ว: ปลดล็อกระบบแมนนวล', 'good');
-                    showToast('ปลดล็อกระบบแมนนวลแล้ว', 'good');
-                }
-                isManualLockedByAuto = autoMode;
-            }
-
-            if (autoMode) {
-                manualLockNoteEl.className = 'manual-lock-note manual-lock-on';
-                manualLockNoteEl.innerHTML = '<i class="fa-solid fa-lock mr-1"></i>Manual ถูกล็อกโดย Auto แบบ real-time';
-            } else {
-                manualLockNoteEl.className = 'manual-lock-note manual-lock-off';
-                manualLockNoteEl.innerHTML = '<i class="fa-solid fa-unlock mr-1"></i>Manual พร้อมใช้งาน: ตอนนี้ควบคุม Relay 1/2 ได้ตามปกติ';
-            }
-        }
-
-        function updateRxRate() {
-            const now = performance.now();
-            if (lastSnapshotAt > 0) {
-                const hz = 1000 / Math.max(1, now - lastSnapshotAt);
-                rxRateEl.textContent = `${hz.toFixed(1)} /s`;
-            }
-            lastSnapshotAt = now;
-        }
-
-        function renderSensorValues(temp, hum, light) {
-            const nextTemp = temp === null ? '--' : temp.toFixed(1);
-            const nextHum = hum === null ? '--' : hum.toFixed(1);
-            const nextLight = light === null ? '--' : light.toFixed(0);
-
-            if (lastRendered.temp !== nextTemp) {
-                tempEl.innerText = nextTemp;
-                lastRendered.temp = nextTemp;
-            }
-            if (lastRendered.hum !== nextHum) {
-                humEl.innerText = nextHum;
-                lastRendered.hum = nextHum;
-            }
-            if (lastRendered.light !== nextLight) {
-                lightEl.innerText = nextLight;
-                lastRendered.light = nextLight;
-            }
-        }
-
-        function applyOptimisticSwitchState(patch) {
-            if (Object.prototype.hasOwnProperty.call(patch, 'relay1')) {
-                toggleRelay1.checked = Boolean(patch.relay1);
-            }
-            if (Object.prototype.hasOwnProperty.call(patch, 'relay2')) {
-                toggleRelay2.checked = Boolean(patch.relay2);
-            }
-            if (Object.prototype.hasOwnProperty.call(patch, 'auto_mode')) {
-                toggleAuto.checked = Boolean(patch.auto_mode);
-                setManualLockState(Boolean(patch.auto_mode));
-            }
-        }
-
-        async function flushPendingPatch() {
-            if (!Object.keys(pendingPatch).length) {
-                patchTimer = null;
-                return;
-            }
-
-            const patch = pendingPatch;
-            pendingPatch = {};
-            patchTimer = null;
-            setTxState('tx-pending', 'SENDING');
-
-            const t0 = performance.now();
-            try {
-                await update(ref(db, 'iot_data'), patch);
-                const latency = performance.now() - t0;
-                txLatencyEl.textContent = `${latency.toFixed(0)} ms`;
-                setTxState('tx-ok', 'DELIVERED');
-                window.setTimeout(() => setTxState('tx-live', 'READY'), 550);
-            } catch (error) {
-                console.error(error);
-                setTxState('tx-fail', 'FAILED');
-                showToast('ส่งคำสั่งไม่สำเร็จ ลองใหม่อีกครั้ง', 'danger');
-                addLog('ส่งคำสั่งไป Firebase ไม่สำเร็จ', 'danger');
-            }
-        }
-
-        function queueDevicePatch(patch) {
-            pendingPatch = { ...pendingPatch, ...patch };
-            applyOptimisticSwitchState(patch);
-            setTxState('tx-pending', 'QUEUE');
-
-            if (patchTimer !== null) {
-                window.clearTimeout(patchTimer);
-            }
-            patchTimer = window.setTimeout(flushPendingPatch, 70);
-        }
-
-        // ดึงข้อมูล Realtime จาก Firebase (/iot_data)
-        const dbRef = ref(db, 'iot_data');
-        onValue(dbRef, (snapshot) => {
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                setConnectedStatus();
-                updateRxRate();
-
-                const temp = toNumberOrNull(data.temperature);
-                const hum = toNumberOrNull(data.humidity);
-                const light = toNumberOrNull(data.light_percent);
-
-                // แสดงค่าตัวเลข (render เฉพาะค่าที่เปลี่ยน)
-                renderSensorValues(temp, hum, light);
-                updateLightMood(light);
-
-                const tempResult = classifyTemp(temp);
-                const humResult = classifyHum(hum);
-                const lightResult = classifyLight(light);
-
-                setStatusChip(tempStatusEl, tempResult, 'temp');
-                setStatusChip(humStatusEl, humResult, 'hum');
-                setStatusChip(lightStatusEl, lightResult, 'light');
-
-                pushStatusIfChanged('temp', tempResult, 'อุณหภูมิ');
-                pushStatusIfChanged('hum', humResult, 'ความชื้น');
-                pushStatusIfChanged('light', lightResult, 'ความสว่าง');
-
-                const relay1 = Boolean(data.relay1);
-                const relay2 = Boolean(data.relay2);
-                const autoMode = Boolean(data.auto_mode);
-
-                // อัปเดตสถานะปุ่ม (ป้องกันการวนลูปถ้าเรากดเอง)
-                if (document.activeElement !== toggleRelay1 && lastRendered.relay1 !== relay1) {
-                    toggleRelay1.checked = relay1;
-                    lastRendered.relay1 = relay1;
-                }
-                if (document.activeElement !== toggleRelay2 && lastRendered.relay2 !== relay2) {
-                    toggleRelay2.checked = relay2;
-                    lastRendered.relay2 = relay2;
-                }
-                if (document.activeElement !== toggleAuto && lastRendered.autoMode !== autoMode) {
-                    toggleAuto.checked = autoMode;
-                    lastRendered.autoMode = autoMode;
-                }
-
-                // ล็อกการควบคุมแบบแมนนวลทั้งหมด เมื่อโหมด Auto ทำงาน
-                setManualLockState(autoMode);
-
-                const timeLabel = getTimeString();
-                scheduleChartUpdate(light, temp, hum, timeLabel);
-            } else {
-                setErrorStatus('ยังไม่พบข้อมูลใน iot_data');
-                addLog('ยังไม่พบข้อมูลเซนเซอร์ในโหนด iot_data', 'warn');
-            }
-        }, (error) => {
-            console.error(error);
-            setErrorStatus('เชื่อมต่อไม่ได้ กรุณาตรวจสอบเครือข่าย');
-        });
-
-        // การส่งคำสั่งไปที่ Firebase เมื่อกดสวิตช์
-        toggleRelay1.addEventListener('change', (e) => {
-            if (toggleAuto.checked) {
-                e.target.checked = !e.target.checked;
-                showToast('ไม่สามารถสั่งแมนนวลได้ขณะเปิด Auto', 'warn');
-                addLog('บล็อกคำสั่ง Relay 1 เพราะเปิด Auto อยู่', 'warn');
-                return;
-            }
-            queueDevicePatch({ relay1: e.target.checked });
-            const text = e.target.checked ? 'เปิดหลอดไฟ (Relay 1)' : 'ปิดหลอดไฟ (Relay 1)';
-            addLog(text, 'info');
-            showToast(text, 'info');
-        });
-
-        toggleRelay2.addEventListener('change', (e) => {
-            if (toggleAuto.checked) {
-                e.target.checked = !e.target.checked;
-                showToast('ไม่สามารถสั่งแมนนวลได้ขณะเปิด Auto', 'warn');
-                addLog('บล็อกคำสั่ง Relay 2 เพราะเปิด Auto อยู่', 'warn');
-                return;
-            }
-            queueDevicePatch({ relay2: e.target.checked });
-            const text = e.target.checked ? 'เปิดพัดลม (Relay 2)' : 'ปิดพัดลม (Relay 2)';
-            addLog(text, 'info');
-            showToast(text, 'info');
-        });
-
-        toggleAuto.addEventListener('change', (e) => {
-            queueDevicePatch({ auto_mode: e.target.checked });
-            const text = e.target.checked ? 'เปิดโหมด Auto' : 'ปิดโหมด Auto';
-            addLog(text, e.target.checked ? 'good' : 'warn');
-            showToast(text, e.target.checked ? 'good' : 'warn');
-        });
-
-        allOffBtn.addEventListener('click', () => {
-            queueDevicePatch({ relay1: false, relay2: false, auto_mode: false });
-            addLog('Quick Action: ปิดอุปกรณ์ทั้งหมดและปิด Auto', 'warn');
-            showToast('ปิดอุปกรณ์ทั้งหมดแล้ว', 'warn');
-        });
-
-        syncNowBtn.addEventListener('click', () => {
-            if (patchTimer !== null) {
-                window.clearTimeout(patchTimer);
-            }
-            flushPendingPatch();
-            addLog('Quick Action: สั่ง Sync ทันที', 'info');
-            showToast('กำลัง Sync ข้อมูลทันที', 'info');
-        });
-
-        clearLogsBtn.addEventListener('click', () => {
-            logListEl.innerHTML = '';
-            persistedLogs.length = 0;
-            persistLogs();
-            refreshDailySummary();
-            addLog('ล้าง Log ย้อนหลังแล้ว', 'info');
-            showToast('ล้าง Log เรียบร้อย', 'info');
-        });
-
-        exportLogsBtn.addEventListener('click', exportLogsToCsv);
-
-        themeObsidianBtn.addEventListener('click', () => setTheme('obsidian'));
-        themeCarbonBtn.addEventListener('click', () => setTheme('carbon'));
-        themeNeonBtn.addEventListener('click', () => setTheme('neon'));
-        modeDarkBtn.addEventListener('click', () => setMode('dark'));
-        modeLightBtn.addEventListener('click', () => setMode('light'));
-
-        thresholdPresetEl.addEventListener('change', (e) => {
-            const presetConfig = getThresholdPresetConfig(e.target.value);
-            writeThresholdInputs(presetConfig);
-            applyThresholdConfig(presetConfig);
-        });
-
-        applyThresholdBtn.addEventListener('click', () => {
-            applyThresholdConfig(readThresholdInputs());
-        });
-
-        resetThresholdBtn.addEventListener('click', () => {
-            const presetConfig = getThresholdPresetConfig('balanced');
-            applyThresholdConfig(presetConfig);
-        });
-
-        loadMode();
-        loadTheme();
-        loadThresholdConfig();
-        loadPersistedLogs();
-        refreshDailySummary();
-
-        if (persistedLogs.length === 0) {
-            addLog('ระบบเริ่มทำงานและรอข้อมูลจาก Firebase', 'info');
-        }
-
-    </script>
+    <script type="module" src="app.js"></script>
 </body>
 </html>
